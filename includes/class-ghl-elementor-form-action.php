@@ -78,8 +78,18 @@ class GHL_Elementor_Form_Action extends \ElementorPro\Modules\Forms\Classes\Acti
             'ghl_dashboard_notice',
             [
                 'type' => \Elementor\Controls_Manager::RAW_HTML,
-                'raw' => esc_html__('GHL settings are managed in WordPress Dashboard > GHL Config.', self::TEXT_DOMAIN),
+                'raw' => esc_html__('GHL credentials, users, and pipeline routing are managed in WordPress Dashboard > GHL Config.', self::TEXT_DOMAIN),
                 'content_classes' => 'elementor-descriptor',
+            ]
+        );
+
+        $widget->add_control(
+            'ghl_redirect_url',
+            [
+                'label' => esc_html__('Redirect URL After GHL Submit', self::TEXT_DOMAIN),
+                'type' => \Elementor\Controls_Manager::URL,
+                'label_block' => true,
+                'placeholder' => 'https://gotoshout.com/lead-progressive-form-sample',
             ]
         );
 
@@ -124,7 +134,6 @@ class GHL_Elementor_Form_Action extends \ElementorPro\Modules\Forms\Classes\Acti
         unset($element['settings']['ghl_pipeline_id']);
         unset($element['settings']['ghl_pipeline_stage_id']);
         unset($element['settings']['ghl_message_custom_field_id']);
-        unset($element['settings']['ghl_redirect_url']);
 
         return $element;
     }
@@ -443,6 +452,8 @@ class GHL_Elementor_Form_Action extends \ElementorPro\Modules\Forms\Classes\Acti
     private function get_settings($record)
     {
         $settings = $this->settings_repository->get();
+        $form_settings = $record->get('form_settings');
+        $form_settings = is_array($form_settings) ? $form_settings : [];
 
         return [
             'token' => trim($settings['token'] ?? ''),
@@ -452,10 +463,28 @@ class GHL_Elementor_Form_Action extends \ElementorPro\Modules\Forms\Classes\Acti
             'default_user_id' => trim($settings['default_user_id'] ?? ''),
             'default_pipeline_stage_id' => trim($settings['default_pipeline_stage_id'] ?? ''),
             'message_custom_field_id' => trim($settings['message_custom_field_id'] ?? ''),
-            'redirect_url' => esc_url_raw($settings['redirect_url'] ?? ''),
+            'redirect_url' => $this->get_redirect_url($form_settings, $settings),
             'state_user_map' => is_array($settings['state_user_map'] ?? null) ? $settings['state_user_map'] : [],
             'user_stage_map' => is_array($settings['user_stage_map'] ?? null) ? $settings['user_stage_map'] : [],
         ];
+    }
+
+    /**
+     * Extract redirect URL from Elementor with dashboard fallback.
+     *
+     * @param array $form_settings Elementor form settings.
+     * @param array $dashboard_settings Dashboard settings.
+     * @return string
+     */
+    private function get_redirect_url(array $form_settings, array $dashboard_settings)
+    {
+        $redirect_setting = $form_settings['ghl_redirect_url'] ?? [];
+
+        if (is_array($redirect_setting) && !empty($redirect_setting['url'])) {
+            return esc_url_raw($redirect_setting['url']);
+        }
+
+        return esc_url_raw($dashboard_settings['redirect_url'] ?? '');
     }
 
     /**
