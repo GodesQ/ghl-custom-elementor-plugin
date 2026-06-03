@@ -58,6 +58,28 @@ class GHL_API_Client
     }
 
     /**
+     * Get users for a GHL location.
+     *
+     * @param string $location_id Location ID.
+     * @return array|\WP_Error
+     */
+    public function get_users_by_location($location_id)
+    {
+        return $this->request('/users?locationId=' . rawurlencode($location_id), 'GET');
+    }
+
+    /**
+     * Get pipelines for a GHL location.
+     *
+     * @param string $location_id Location ID.
+     * @return array|\WP_Error
+     */
+    public function get_pipelines($location_id)
+    {
+        return $this->request('/opportunities/pipelines?locationId=' . rawurlencode($location_id), 'GET');
+    }
+
+    /**
      * Create a GHL opportunity.
      *
      * @param array $payload Opportunity payload.
@@ -165,6 +187,92 @@ class GHL_API_Client
     }
 
     /**
+     * Normalize GHL user list response.
+     *
+     * @param array $response API response.
+     * @return array
+     */
+    public function normalize_users(array $response)
+    {
+        $items = $this->extract_list($response, ['users', 'data']);
+        $users = [];
+
+        foreach ($items as $item) {
+            if (!is_array($item) || empty($item['id'])) {
+                continue;
+            }
+
+            $name = trim((string) ($item['name'] ?? ''));
+
+            if ($name === '') {
+                $name = trim((string) (($item['firstName'] ?? '') . ' ' . ($item['lastName'] ?? '')));
+            }
+
+            if ($name === '') {
+                $name = (string) ($item['email'] ?? $item['id']);
+            }
+
+            $users[] = [
+                'id' => (string) $item['id'],
+                'name' => $name,
+                'email' => (string) ($item['email'] ?? ''),
+            ];
+        }
+
+        usort($users, [$this, 'sort_by_name']);
+
+        return $users;
+    }
+
+    /**
+     * Normalize GHL pipeline list response.
+     *
+     * @param array $response API response.
+     * @return array
+     */
+    public function normalize_pipelines(array $response)
+    {
+        $items = $this->extract_list($response, ['pipelines', 'data']);
+        $pipelines = [];
+
+        foreach ($items as $item) {
+            if (!is_array($item) || empty($item['id'])) {
+                continue;
+            }
+
+            $pipelines[] = [
+                'id' => (string) $item['id'],
+                'name' => (string) ($item['name'] ?? $item['id']),
+                'stages' => $this->normalize_stages($item['stages'] ?? []),
+            ];
+        }
+
+        usort($pipelines, [$this, 'sort_by_name']);
+
+        return $pipelines;
+    }
+
+    /**
+     * Get normalized stages from a selected pipeline.
+     *
+     * @param array  $pipelines Normalized pipelines.
+     * @param string $pipeline_id Selected pipeline ID.
+     * @return array
+     */
+    public function get_pipeline_stages(array $pipelines, $pipeline_id)
+    {
+        foreach ($pipelines as $pipeline) {
+            if (!is_array($pipeline) || ($pipeline['id'] ?? '') !== $pipeline_id) {
+                continue;
+            }
+
+            return is_array($pipeline['stages'] ?? null) ? $pipeline['stages'] : [];
+        }
+
+        return [];
+    }
+
+    /**
      * Send an HTTP request to GHL.
      *
      * @param string $endpoint API endpoint path.
@@ -262,49 +370,82 @@ class GHL_API_Client
         ];
     }
 
-    private function getSalesRep($event_location_state, $role)
+    /**
+     * Extract a list from common API response containers.
+     *
+     * @param array $response API response.
+     * @param array $keys Candidate list keys.
+     * @return array
+     */
+    private function extract_list(array $response, array $keys)
     {
-        $event_location_state = strtolower(trim($event_location_state));
-        $role = strtolower(trim($role)); // event professional, wedding venue representative, etc.
-
-        switch ($event_location_state) {
-            case 'massachusetts':
-            case 'rhode island':
-            case 'new york':
-            case 'connecticut':
-            case 'new hampshire':
-            case 'maine':
-            case 'virginia':
-            case 'maryland':
-            case 'north carolina':
-            case 'south carolina':
-            case 'pennsylvania':
-            case 'new jersey':
-            case 'delaware':
-                return 'Meghan';
-
-            case 'california':
-            case 'nevada':
-            case 'texas':
-            case 'illinois':
-            case 'wisconsin':
-            case 'indiana':
-            case 'michigan':
-            case 'arizona':
-            case 'any other state':
-                return 'Brandt';
-
-            case 'florida':
-            case 'georgia':
-                return match ($role) {
-                    'event professional' => 'Brandt',
-                    'wedding venue representative' => 'Brandt',
-                    'hotel representative' => 'Brandt',
-                    'wedding or party client' => 'Meghan',
-                };
-
-            default:
-                return 'Brandt'; // fallback for unlisted states
+        foreach ($keys as $key) {
+            if (isset($response[$key]) && is_array($response[$key])) {
+                return $response[$key];
+            }
         }
+
+        return $this->is_list_array($response) ? $response : [];
+    }
+
+    /**
+     * Normalize pipeline stages.
+     *
+     * @param mixed $stages Raw stages.
+     * @return array
+     */
+    private function normalize_stages($stages)
+    {
+        if (!is_array($stages)) {
+            return [];
+        }
+
+        $normalized = [];
+
+        foreach ($stages as $stage) {
+            if (!is_array($stage) || empty($stage['id'])) {
+                continue;
+            }
+
+            $normalized[] = [
+                'id' => (string) $stage['id'],
+                'name' => (string) ($stage['name'] ?? $stage['id']),
+            ];
+        }
+
+        return $normalized;
+    }
+
+    /**
+     * Sort normalized GHL rows by display name.
+     *
+     * @param array $first First item.
+     * @param array $second Second item.
+     * @return int
+     */
+    private function sort_by_name(array $first, array $second)
+    {
+        return strcasecmp($first['name'] ?? '', $second['name'] ?? '');
+    }
+
+    /**
+     * Determine whether an array is a sequential list.
+     *
+     * @param array $array Array to inspect.
+     * @return bool
+     */
+    private function is_list_array(array $array)
+    {
+        $expected = 0;
+
+        foreach (array_keys($array) as $key) {
+            if ($key !== $expected) {
+                return false;
+            }
+
+            $expected++;
+        }
+
+        return true;
     }
 }

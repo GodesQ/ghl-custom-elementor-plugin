@@ -62,9 +62,10 @@ class GHL_Field_Mapper
      * @param array  $fields Submitted fields.
      * @param string $location_id GHL location ID.
      * @param string $message_custom_field_id Optional GHL custom field ID for message.
+     * @param string $assigned_user_id Optional assigned GHL user ID.
      * @return array
      */
-    public function build_contact_payload(array $fields, $location_id, $message_custom_field_id = '')
+    public function build_contact_payload(array $fields, $location_id, $message_custom_field_id = '', $assigned_user_id = '')
     {
         $payload = [
             'locationId' => $location_id,
@@ -76,9 +77,12 @@ class GHL_Field_Mapper
             'tags' => [
                 self::INITIAL_TAG,
             ],
-            'assignedTo' => "gy8HUkOG0IWRHK1bT3AY",
             'companyName' => $fields['company'] ?? '',
         ];
+
+        if (!empty($assigned_user_id)) {
+            $payload['assignedTo'] = $assigned_user_id;
+        }
 
         if (!empty($fields['message']) && !empty($message_custom_field_id)) {
             $payload['customFields'] = [

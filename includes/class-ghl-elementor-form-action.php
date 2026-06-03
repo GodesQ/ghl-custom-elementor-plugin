@@ -25,10 +25,16 @@ class GHL_Elementor_Form_Action extends \ElementorPro\Modules\Forms\Classes\Acti
      */
     private $field_mapper;
 
+    /**
+     * @var GHL_Elementor_Settings
+     */
+    private $settings_repository;
+
     public function __construct()
     {
         $this->logger = new GHL_Logger();
         $this->field_mapper = new GHL_Field_Mapper();
+        $this->settings_repository = new GHL_Elementor_Settings();
     }
 
     /**
@@ -69,57 +75,11 @@ class GHL_Elementor_Form_Action extends \ElementorPro\Modules\Forms\Classes\Acti
         );
 
         $widget->add_control(
-            'ghl_location_id',
+            'ghl_dashboard_notice',
             [
-                'label' => esc_html__('GHL Location ID', self::TEXT_DOMAIN),
-                'type' => \Elementor\Controls_Manager::TEXT,
-                'label_block' => true,
-            ]
-        );
-
-        $widget->add_control(
-            'ghl_pipeline_id',
-            [
-                'label' => esc_html__('GHL Pipeline ID', self::TEXT_DOMAIN),
-                'type' => \Elementor\Controls_Manager::TEXT,
-                'label_block' => true,
-            ]
-        );
-
-        $widget->add_control(
-            'ghl_pipeline_stage_id',
-            [
-                'label' => esc_html__('GHL Pipeline Stage ID', self::TEXT_DOMAIN),
-                'type' => \Elementor\Controls_Manager::TEXT,
-                'label_block' => true,
-            ]
-        );
-
-        $widget->add_control(
-            'ghl_token',
-            [
-                'label' => esc_html__('GHL Private Integration Token', self::TEXT_DOMAIN),
-                'type' => \Elementor\Controls_Manager::TEXTAREA,
-                'label_block' => true,
-            ]
-        );
-
-        $widget->add_control(
-            'ghl_message_custom_field_id',
-            [
-                'label' => esc_html__('GHL Message Custom Field ID', self::TEXT_DOMAIN),
-                'type' => \Elementor\Controls_Manager::TEXT,
-                'label_block' => true,
-            ]
-        );
-
-        $widget->add_control(
-            'ghl_redirect_url',
-            [
-                'label' => esc_html__('Redirect URL After GHL Submit', self::TEXT_DOMAIN),
-                'type' => \Elementor\Controls_Manager::URL,
-                'label_block' => true,
-                'placeholder' => 'https://gotoshout.com/lead-progressive-form-sample',
+                'type' => \Elementor\Controls_Manager::RAW_HTML,
+                'raw' => esc_html__('GHL settings are managed in WordPress Dashboard > GHL Config.', self::TEXT_DOMAIN),
+                'content_classes' => 'elementor-descriptor',
             ]
         );
 
@@ -160,6 +120,11 @@ class GHL_Elementor_Form_Action extends \ElementorPro\Modules\Forms\Classes\Acti
     public function on_export($element)
     {
         unset($element['settings']['ghl_token']);
+        unset($element['settings']['ghl_location_id']);
+        unset($element['settings']['ghl_pipeline_id']);
+        unset($element['settings']['ghl_pipeline_stage_id']);
+        unset($element['settings']['ghl_message_custom_field_id']);
+        unset($element['settings']['ghl_redirect_url']);
 
         return $element;
     }
@@ -173,7 +138,7 @@ class GHL_Elementor_Form_Action extends \ElementorPro\Modules\Forms\Classes\Acti
      */
     private function handle_initial_form(array $settings, array $fields, $ajax_handler)
     {
-        if (!$this->has_required_settings($settings, ['token', 'location_id', 'pipeline_id', 'pipeline_stage_id'])) {
+        if (!$this->has_required_settings($settings, ['token', 'location_id', 'pipeline_id', 'default_user_id', 'default_pipeline_stage_id'])) {
             $ajax_handler->add_error_message('GHL integration is not configured.');
             return;
         }
@@ -185,10 +150,12 @@ class GHL_Elementor_Form_Action extends \ElementorPro\Modules\Forms\Classes\Acti
 
         $api_client = $this->make_api_client($settings);
 
+        $routing = $this->resolve_routing($settings, $fields);
         $contact_payload = $this->field_mapper->build_contact_payload(
             $fields,
             $settings['location_id'],
-            $settings['message_custom_field_id']
+            $settings['message_custom_field_id'],
+            $routing['assigned_user_id']
         );
 
         $custom_fields = $this->field_mapper->build_initial_contact_custom_fields(
@@ -217,7 +184,9 @@ class GHL_Elementor_Form_Action extends \ElementorPro\Modules\Forms\Classes\Acti
             return;
         }
 
-        $opportunity_payload = $this->field_mapper->build_opportunity_payload($fields, $contact_id, $settings);
+        $opportunity_settings = $settings;
+        $opportunity_settings['pipeline_stage_id'] = $routing['pipeline_stage_id'];
+        $opportunity_payload = $this->field_mapper->build_opportunity_payload($fields, $contact_id, $opportunity_settings);
         $opportunity_response = $api_client->create_opportunity($opportunity_payload);
 
         if (is_wp_error($opportunity_response)) {
@@ -466,41 +435,27 @@ class GHL_Elementor_Form_Action extends \ElementorPro\Modules\Forms\Classes\Acti
     }
 
     /**
-     * Normalize Elementor action settings.
+     * Normalize dashboard action settings.
      *
      * @param object $record Elementor form record.
      * @return array
      */
     private function get_settings($record)
     {
-        $settings = $record->get('form_settings');
-        $settings = is_array($settings) ? $settings : [];
+        $settings = $this->settings_repository->get();
 
         return [
-            'token' => trim($settings['ghl_token'] ?? ''),
-            'location_id' => trim($settings['ghl_location_id'] ?? ''),
-            'pipeline_id' => trim($settings['ghl_pipeline_id'] ?? ''),
-            'pipeline_stage_id' => trim($settings['ghl_pipeline_stage_id'] ?? ''),
-            'message_custom_field_id' => trim($settings['ghl_message_custom_field_id'] ?? ''),
-            'redirect_url' => $this->get_redirect_url($settings),
+            'token' => trim($settings['token'] ?? ''),
+            'location_id' => trim($settings['location_id'] ?? ''),
+            'pipeline_id' => trim($settings['pipeline_id'] ?? ''),
+            'pipeline_stage_id' => trim($settings['default_pipeline_stage_id'] ?? ''),
+            'default_user_id' => trim($settings['default_user_id'] ?? ''),
+            'default_pipeline_stage_id' => trim($settings['default_pipeline_stage_id'] ?? ''),
+            'message_custom_field_id' => trim($settings['message_custom_field_id'] ?? ''),
+            'redirect_url' => esc_url_raw($settings['redirect_url'] ?? ''),
+            'state_user_map' => is_array($settings['state_user_map'] ?? null) ? $settings['state_user_map'] : [],
+            'user_stage_map' => is_array($settings['user_stage_map'] ?? null) ? $settings['user_stage_map'] : [],
         ];
-    }
-
-    /**
-     * Extract redirect URL from Elementor URL control.
-     *
-     * @param array $settings Raw settings.
-     * @return string
-     */
-    private function get_redirect_url(array $settings)
-    {
-        $redirect_setting = $settings['ghl_redirect_url'] ?? [];
-
-        if (!is_array($redirect_setting) || empty($redirect_setting['url'])) {
-            return '';
-        }
-
-        return esc_url_raw($redirect_setting['url']);
     }
 
     /**
@@ -530,6 +485,49 @@ class GHL_Elementor_Form_Action extends \ElementorPro\Modules\Forms\Classes\Acti
     private function make_api_client(array $settings)
     {
         return new GHL_API_Client($settings['token'], $this->logger);
+    }
+
+    /**
+     * Resolve assigned user and pipeline stage for a submitted lead.
+     *
+     * @param array $settings Dashboard settings.
+     * @param array $fields Submitted fields.
+     * @return array
+     */
+    private function resolve_routing(array $settings, array $fields)
+    {
+        $sales_state = $this->settings_repository->get_sales_state_from_fields($fields);
+        $assigned_user_id = '';
+        $pipeline_stage_id = '';
+
+        if ($sales_state !== '' && !empty($settings['state_user_map'][$sales_state])) {
+            $assigned_user_id = $settings['state_user_map'][$sales_state];
+        }
+
+        if ($assigned_user_id === '') {
+            $assigned_user_id = $settings['default_user_id'];
+            $this->logger->error('GHL state routing used default user.', [
+                'sales_state' => $sales_state,
+            ]);
+        }
+
+        if (!empty($settings['user_stage_map'][$assigned_user_id])) {
+            $pipeline_stage_id = $settings['user_stage_map'][$assigned_user_id];
+        }
+
+        if ($pipeline_stage_id === '') {
+            $pipeline_stage_id = $settings['default_pipeline_stage_id'];
+            $this->logger->error('GHL user stage routing used default stage.', [
+                'sales_state' => $sales_state,
+                'assigned_user_id' => $assigned_user_id,
+            ]);
+        }
+
+        return [
+            'sales_state' => $sales_state,
+            'assigned_user_id' => $assigned_user_id,
+            'pipeline_stage_id' => $pipeline_stage_id,
+        ];
     }
 
     /**

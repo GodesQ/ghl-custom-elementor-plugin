@@ -14,12 +14,30 @@ class GHL_Elementor_Plugin
     const VERSION = '1.0.0';
 
     /**
+     * @var GHL_Elementor_Settings
+     */
+    private $settings_repository;
+
+    /**
+     * @var GHL_Elementor_Admin_Page
+     */
+    private $admin_page;
+
+    public function __construct()
+    {
+        $this->settings_repository = new GHL_Elementor_Settings();
+        $this->admin_page = new GHL_Elementor_Admin_Page($this->settings_repository);
+    }
+
+    /**
      * Register WordPress hooks.
      */
     public function register()
     {
         add_action('elementor_pro/forms/actions/register', [$this, 'register_form_action']);
         add_action('wp_enqueue_scripts', [$this, 'enqueue_scripts']);
+
+        $this->admin_page->register();
     }
 
     /**

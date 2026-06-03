@@ -2,7 +2,7 @@
 /**
  * Plugin Name: GHL Elementor Form Action
  * Description: Sends Elementor Pro form submissions to GoHighLevel Contacts and Opportunities.
- * Version: 1.0.0
+ * Version: 2.0.0
  * Text Domain: ghl-elementor
  */
 
@@ -24,7 +24,9 @@ if (!defined('GHL_ELEMENTOR_PLUGIN_URL')) {
 
 require_once GHL_ELEMENTOR_PLUGIN_DIR . 'includes/class-ghl-logger.php';
 require_once GHL_ELEMENTOR_PLUGIN_DIR . 'includes/class-ghl-api-client.php';
+require_once GHL_ELEMENTOR_PLUGIN_DIR . 'includes/class-ghl-settings.php';
 require_once GHL_ELEMENTOR_PLUGIN_DIR . 'includes/class-ghl-field-mapper.php';
+require_once GHL_ELEMENTOR_PLUGIN_DIR . 'includes/class-ghl-admin-page.php';
 require_once GHL_ELEMENTOR_PLUGIN_DIR . 'includes/class-ghl-plugin.php';
 
 $ghl_elementor_plugin = new GHL_Elementor_Plugin();
