@@ -65,7 +65,7 @@ class GHL_API_Client
      */
     public function get_users_by_location($location_id)
     {
-        return $this->request('/users?locationId=' . rawurlencode($location_id), 'GET');
+        return $this->request('/users/?locationId=' . rawurlencode($location_id), 'GET');
     }
 
     /**

@@ -319,7 +319,10 @@ class GHL_Elementor_Admin_Page
 
         if (is_wp_error($users_response)) {
             $had_error = true;
-            $messages[] = __('Users could not be refreshed.', 'ghl-elementor');
+            $messages[] = sprintf(
+                __('Users could not be refreshed: %s', 'ghl-elementor'),
+                $users_response->get_error_message()
+            );
         } else {
             $settings['users'] = $api_client->normalize_users($users_response);
             $messages[] = sprintf(
@@ -332,7 +335,10 @@ class GHL_Elementor_Admin_Page
 
         if (is_wp_error($pipelines_response)) {
             $had_error = true;
-            $messages[] = __('Pipelines could not be refreshed.', 'ghl-elementor');
+            $messages[] = sprintf(
+                __('Pipelines could not be refreshed: %s', 'ghl-elementor'),
+                $pipelines_response->get_error_message()
+            );
         } else {
             $settings['pipelines'] = $api_client->normalize_pipelines($pipelines_response);
             $settings['stages'] = $api_client->get_pipeline_stages($settings['pipelines'], $settings['pipeline_id']);
