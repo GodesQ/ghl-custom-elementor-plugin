@@ -203,6 +203,16 @@ class GHL_Elementor_Form_Action extends \ElementorPro\Modules\Forms\Classes\Acti
             $routing['assigned_user_id']
         );
 
+        $opportunity_custom_fields = $this->field_mapper->build_initial_opportunity_custom_fields(
+            $fields,
+            $api_client,
+            $settings['location_id']
+        );
+
+        if (!empty($opportunity_custom_fields)) {
+            $opportunity_payload['customFields'] = $opportunity_custom_fields;
+        }
+
         $opportunity_response = $api_client->create_opportunity($opportunity_payload);
 
         if (is_wp_error($opportunity_response)) {
@@ -257,13 +267,13 @@ class GHL_Elementor_Form_Action extends \ElementorPro\Modules\Forms\Classes\Acti
             return;
         }
 
-        $custom_fields = $this->field_mapper->build_progressive_custom_fields(
+        $opportunity_payload = [];
+
+        $custom_fields = $this->field_mapper->build_progressive_opportunity_custom_fields(
             $fields,
             $api_client,
             $settings['location_id']
         );
-
-        $opportunity_payload = [];
 
         if (!empty($custom_fields)) {
             $opportunity_payload['customFields'] = $custom_fields;

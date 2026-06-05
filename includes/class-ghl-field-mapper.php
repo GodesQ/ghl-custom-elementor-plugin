@@ -28,10 +28,16 @@ class GHL_Field_Mapper
         'contact.event_date' => 'event_date',
     ];
 
+    const INITIAL_OPPORTUNITY_FIELDS = [
+        'opportunity.product_of_interest' => 'interest',
+        'opportunity.event_location' => 'event_address',
+        'opportunity.event_date' => 'event_date',
+    ];
+
     const PROGRESSIVE_OPPORTUNITY_FIELDS = [
-        'opportunity.dance_floor_wrap_finish' => 'dance_floor_wrap_finish',
-        'opportunity.dance_floor_wrap_type' => 'dance_floor_wrap_type',
-        'opportunity.venue_room_size' => 'venue_room_size',
+        'opportunity.item_finish' => 'dance_floor_wrap_finish',
+        'opportunity.item_type' => 'dance_floor_wrap_type',
+        'opportunity.venue_size' => 'venue_room_size',
     ];
 
     /**
@@ -220,6 +226,41 @@ class GHL_Field_Mapper
     }
 
     /**
+     * Build custom fields for an initial opportunity create.
+     *
+     * @param array          $fields Submitted fields.
+     * @param GHL_API_Client $api_client API client.
+     * @param string         $location_id GHL location ID.
+     * @return array
+     */
+    public function build_initial_opportunity_custom_fields(array $fields, GHL_API_Client $api_client, $location_id)
+    {
+        $custom_fields = [];
+
+        foreach (self::INITIAL_OPPORTUNITY_FIELDS as $field_key => $form_field_id) {
+            $field_value = $fields[$form_field_id] ?? '';
+
+            if ($field_value === null || $field_value === '') {
+                continue;
+            }
+
+            $field_id = $api_client->get_custom_field_id_by_key($location_id, $field_key);
+
+            if (empty($field_id)) {
+                continue;
+            }
+
+            $custom_fields[] = [
+                'id' => $field_id,
+                'key' => $field_key,
+                'field_value' => $field_value,
+            ];
+        }
+
+        return $custom_fields;
+    }
+
+    /**
      * Build custom fields for a progressive opportunity update.
      *
      * @param array          $fields Submitted fields.
@@ -227,7 +268,7 @@ class GHL_Field_Mapper
      * @param string         $location_id GHL location ID.
      * @return array
      */
-    public function build_progressive_custom_fields(array $fields, GHL_API_Client $api_client, $location_id)
+    public function build_progressive_opportunity_custom_fields(array $fields, GHL_API_Client $api_client, $location_id)
     {
         $custom_fields = [];
 
