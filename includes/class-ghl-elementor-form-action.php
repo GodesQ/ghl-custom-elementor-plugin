@@ -279,14 +279,6 @@ class GHL_Elementor_Form_Action extends \ElementorPro\Modules\Forms\Classes\Acti
             $opportunity_payload['customFields'] = $custom_fields;
         }
 
-        if (!empty($settings['pipeline_id'])) {
-            $opportunity_payload['pipelineId'] = $settings['pipeline_id'];
-        }
-
-        if (!empty($settings['pipeline_stage_id'])) {
-            $opportunity_payload['pipelineStageId'] = $settings['pipeline_stage_id'];
-        }
-
         if (empty($opportunity_payload)) {
             $this->logger->info('Progressive opportunity update skipped because payload was empty.');
             $this->add_redirect_response($settings, $contact_id, $opportunity_id, $ajax_handler);
