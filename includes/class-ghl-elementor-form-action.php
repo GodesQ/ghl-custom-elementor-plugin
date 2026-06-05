@@ -345,10 +345,22 @@ class GHL_Elementor_Form_Action extends \ElementorPro\Modules\Forms\Classes\Acti
             return;
         }
 
+        $calendar_id = $settings['user_calendar_map'][$assigned_user_id] ?? '';
+
+        if (empty($calendar_id)) {
+            $this->logger->error('Scheduled appointment missing assigned user calendar.', [
+                'contact_id' => $contact_id,
+                'assigned_user_id' => $assigned_user_id,
+            ]);
+            $ajax_handler->add_error_message('GHL assigned user does not have a calendar configured.');
+            return;
+        }
+
         $appointment_payload = $this->field_mapper->build_appointment_payload(
             $fields,
             $settings['location_id'],
-            $assigned_user_id
+            $assigned_user_id,
+            $calendar_id
         );
 
         if (is_wp_error($appointment_payload)) {
@@ -371,7 +383,7 @@ class GHL_Elementor_Form_Action extends \ElementorPro\Modules\Forms\Classes\Acti
 
         $this->logger->info('Scheduled appointment created.', [
             'contact_id' => $contact_id,
-            'calendar_id' => GHL_Field_Mapper::APPOINTMENT_CALENDAR_ID,
+            'calendar_id' => $calendar_id,
             'assigned_user_id' => $assigned_user_id,
         ]);
 
@@ -475,6 +487,7 @@ class GHL_Elementor_Form_Action extends \ElementorPro\Modules\Forms\Classes\Acti
             'redirect_url' => $this->get_redirect_url($form_settings, $settings),
             'state_user_map' => is_array($settings['state_user_map'] ?? null) ? $settings['state_user_map'] : [],
             'user_stage_map' => is_array($settings['user_stage_map'] ?? null) ? $settings['user_stage_map'] : [],
+            'user_calendar_map' => is_array($settings['user_calendar_map'] ?? null) ? $settings['user_calendar_map'] : [],
         ];
     }
 

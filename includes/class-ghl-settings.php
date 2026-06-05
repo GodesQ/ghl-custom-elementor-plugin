@@ -115,6 +115,7 @@ class GHL_Elementor_Settings
         $settings['default_pipeline_stage_id'] = sanitize_text_field($input['default_pipeline_stage_id'] ?? '');
         $settings['state_user_map'] = $this->sanitize_map($input['state_user_map'] ?? []);
         $settings['user_stage_map'] = $this->sanitize_map($input['user_stage_map'] ?? []);
+        $settings['user_calendar_map'] = $this->sanitize_map($input['user_calendar_map'] ?? []);
 
         return $settings;
     }
@@ -198,9 +199,11 @@ class GHL_Elementor_Settings
             'default_pipeline_stage_id' => '',
             'state_user_map' => [],
             'user_stage_map' => [],
+            'user_calendar_map' => [],
             'users' => [],
             'pipelines' => [],
             'stages' => [],
+            'calendars' => [],
             'setup_complete' => false,
             'last_sync' => '',
         ];

@@ -80,6 +80,17 @@ class GHL_API_Client
     }
 
     /**
+     * Get calendars for a GHL location.
+     *
+     * @param string $location_id Location ID.
+     * @return array|\WP_Error
+     */
+    public function get_calendars($location_id)
+    {
+        return $this->request('/calendars/?locationId=' . rawurlencode($location_id), 'GET');
+    }
+
+    /**
      * Create a GHL opportunity.
      *
      * @param array $payload Opportunity payload.
@@ -253,6 +264,36 @@ class GHL_API_Client
     }
 
     /**
+     * Normalize active GHL calendar list response.
+     *
+     * @param array $response API response.
+     * @return array
+     */
+    public function normalize_calendars(array $response)
+    {
+        $items = $this->extract_list($response, ['calendars', 'data']);
+        $calendars = [];
+
+        foreach ($items as $item) {
+            if (!is_array($item) || empty($item['id']) || !$this->is_truthy($item['isActive'] ?? false)) {
+                continue;
+            }
+
+            $calendars[] = [
+                'id' => (string) $item['id'],
+                'name' => (string) ($item['name'] ?? $item['id']),
+                'slug' => (string) ($item['slug'] ?? ''),
+                'calendar_type' => (string) ($item['calendarType'] ?? ''),
+                'team_members' => $this->normalize_team_members($item['teamMembers'] ?? []),
+            ];
+        }
+
+        usort($calendars, [$this, 'sort_by_name']);
+
+        return $calendars;
+    }
+
+    /**
      * Get normalized stages from a selected pipeline.
      *
      * @param array  $pipelines Normalized pipelines.
@@ -414,6 +455,46 @@ class GHL_API_Client
         }
 
         return $normalized;
+    }
+
+    /**
+     * Normalize calendar team members.
+     *
+     * @param mixed $team_members Raw team members.
+     * @return array
+     */
+    private function normalize_team_members($team_members)
+    {
+        if (!is_array($team_members)) {
+            return [];
+        }
+
+        $normalized = [];
+
+        foreach ($team_members as $team_member) {
+            if (!is_array($team_member) || empty($team_member['userId'])) {
+                continue;
+            }
+
+            $normalized[] = [
+                'user_id' => (string) $team_member['userId'],
+                'priority' => isset($team_member['priority']) ? (string) $team_member['priority'] : '',
+                'is_primary' => $this->is_truthy($team_member['isPrimary'] ?? false),
+            ];
+        }
+
+        return $normalized;
+    }
+
+    /**
+     * Determine whether an API value should be treated as true.
+     *
+     * @param mixed $value Raw value.
+     * @return bool
+     */
+    private function is_truthy($value)
+    {
+        return $value === true || $value === 1 || $value === '1' || strtolower((string) $value) === 'true';
     }
 
     /**

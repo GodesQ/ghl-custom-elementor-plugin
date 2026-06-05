@@ -17,7 +17,6 @@ class GHL_Field_Mapper
     const INITIAL_TAG = 'Lead';
     const PROGRESSIVE_ADD_TAG = 'strong lead';
     const PROGRESSIVE_REMOVE_TAG = 'lead';
-    const APPOINTMENT_CALENDAR_ID = 'z06rKBsUpIlR15xL0XUB';
     const APPOINTMENT_DURATION_MINUTES = 30;
     const APPOINTMENT_TITLE = 'Scheduled Appointment';
 
@@ -143,14 +142,16 @@ class GHL_Field_Mapper
      * @param array  $fields Submitted fields.
      * @param string $location_id GHL location ID.
      * @param string $assigned_user_id Assigned GHL user ID.
+     * @param string $calendar_id Assigned calendar ID.
      * @return array|\WP_Error
      */
-    public function build_appointment_payload(array $fields, $location_id, $assigned_user_id)
+    public function build_appointment_payload(array $fields, $location_id, $assigned_user_id, $calendar_id)
     {
         $contact_id = trim($fields['contact_id'] ?? '');
         $appointment_date = trim($fields['appointment_date'] ?? '');
         $appointment_time = trim($fields['appointment_time'] ?? '');
         $assigned_user_id = trim($assigned_user_id);
+        $calendar_id = trim($calendar_id);
 
         if (empty($contact_id) || empty($appointment_date) || empty($appointment_time)) {
             return new \WP_Error(
@@ -166,6 +167,13 @@ class GHL_Field_Mapper
             );
         }
 
+        if (empty($calendar_id)) {
+            return new \WP_Error(
+                'ghl_appointment_missing_calendar',
+                'Assigned user calendar is required to schedule an appointment.'
+            );
+        }
+
         try {
             $start_time = new \DateTimeImmutable($appointment_date . ' ' . $appointment_time, wp_timezone());
         } catch (\Exception $exception) {
@@ -178,7 +186,7 @@ class GHL_Field_Mapper
         $end_time = $start_time->modify('+' . self::APPOINTMENT_DURATION_MINUTES . ' minutes');
 
         return [
-            'calendarId' => self::APPOINTMENT_CALENDAR_ID,
+            'calendarId' => $calendar_id,
             'locationId' => $location_id,
             'contactId' => $contact_id,
             'startTime' => $start_time->format(DATE_ATOM),

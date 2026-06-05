@@ -68,6 +68,7 @@ class GHL_Elementor_Admin_Page
         $users = is_array($settings['users']) ? $settings['users'] : [];
         $pipelines = is_array($settings['pipelines']) ? $settings['pipelines'] : [];
         $stages = is_array($settings['stages']) ? $settings['stages'] : [];
+        $calendars = is_array($settings['calendars']) ? $settings['calendars'] : [];
         ?>
         <div class="wrap">
             <h1><?php esc_html_e('GHL Config', 'ghl-elementor'); ?></h1>
@@ -183,12 +184,13 @@ class GHL_Elementor_Admin_Page
                             <th><?php esc_html_e('User', 'ghl-elementor'); ?></th>
                             <th><?php esc_html_e('User ID', 'ghl-elementor'); ?></th>
                             <th><?php esc_html_e('Assigned Pipeline Stage', 'ghl-elementor'); ?></th>
+                            <th><?php esc_html_e('Assigned Calendar', 'ghl-elementor'); ?></th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php if (empty($users)) : ?>
                             <tr>
-                                <td colspan="3"><?php esc_html_e('No GHL users loaded yet. Save connection details, then refresh from GHL.', 'ghl-elementor'); ?></td>
+                                <td colspan="4"><?php esc_html_e('No GHL users loaded yet. Save connection details, then refresh from GHL.', 'ghl-elementor'); ?></td>
                             </tr>
                         <?php else : ?>
                             <?php foreach ($users as $user) : ?>
@@ -201,6 +203,15 @@ class GHL_Elementor_Admin_Page
                                             'ghl_settings[user_stage_map][' . esc_attr($user['id']) . ']',
                                             $settings['user_stage_map'][$user['id']] ?? '',
                                             $stages
+                                        );
+                                        ?>
+                                    </td>
+                                    <td>
+                                        <?php
+                                        $this->render_calendar_select(
+                                            'ghl_settings[user_calendar_map][' . esc_attr($user['id']) . ']',
+                                            $settings['user_calendar_map'][$user['id']] ?? '',
+                                            $calendars
                                         );
                                         ?>
                                     </td>
@@ -228,6 +239,32 @@ class GHL_Elementor_Admin_Page
                                 <tr>
                                     <td><?php echo esc_html($stage['name']); ?></td>
                                     <td><code><?php echo esc_html($stage['id']); ?></code></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+
+                <h2><?php esc_html_e('Calendars', 'ghl-elementor'); ?></h2>
+                <table class="widefat striped">
+                    <thead>
+                        <tr>
+                            <th><?php esc_html_e('Calendar', 'ghl-elementor'); ?></th>
+                            <th><?php esc_html_e('Calendar ID', 'ghl-elementor'); ?></th>
+                            <th><?php esc_html_e('Type', 'ghl-elementor'); ?></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if (empty($calendars)) : ?>
+                            <tr>
+                                <td colspan="3"><?php esc_html_e('No active calendars loaded yet. Save Token and Location ID, then refresh from GHL.', 'ghl-elementor'); ?></td>
+                            </tr>
+                        <?php else : ?>
+                            <?php foreach ($calendars as $calendar) : ?>
+                                <tr>
+                                    <td><?php echo esc_html($calendar['name']); ?></td>
+                                    <td><code><?php echo esc_html($calendar['id']); ?></code></td>
+                                    <td><?php echo esc_html($calendar['calendar_type']); ?></td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php endif; ?>
@@ -354,6 +391,22 @@ class GHL_Elementor_Admin_Page
             }
         }
 
+        $calendars_response = $api_client->get_calendars($settings['location_id']);
+
+        if (is_wp_error($calendars_response)) {
+            $had_error = true;
+            $messages[] = sprintf(
+                __('Calendars could not be refreshed: %s', 'ghl-elementor'),
+                $calendars_response->get_error_message()
+            );
+        } else {
+            $settings['calendars'] = $api_client->normalize_calendars($calendars_response);
+            $messages[] = sprintf(
+                __('Loaded %d active calendars.', 'ghl-elementor'),
+                count($settings['calendars'])
+            );
+        }
+
         if (!$had_error) {
             $settings['last_sync'] = current_time('mysql');
         }
@@ -422,6 +475,28 @@ class GHL_Elementor_Admin_Page
             <?php foreach ($stages as $stage) : ?>
                 <option value="<?php echo esc_attr($stage['id']); ?>" <?php selected($selected, $stage['id']); ?>>
                     <?php echo esc_html($stage['name']); ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+        <?php
+    }
+
+    /**
+     * Render a calendar select control.
+     *
+     * @param string $name Selected field name.
+     * @param string $selected Selected calendar ID.
+     * @param array  $calendars Calendars.
+     * @param string $id Optional field ID.
+     */
+    private function render_calendar_select($name, $selected, array $calendars, $id = '')
+    {
+        ?>
+        <select <?php echo $id ? 'id="' . esc_attr($id) . '"' : ''; ?> name="<?php echo esc_attr($name); ?>">
+            <option value=""><?php esc_html_e('Select calendar', 'ghl-elementor'); ?></option>
+            <?php foreach ($calendars as $calendar) : ?>
+                <option value="<?php echo esc_attr($calendar['id']); ?>" <?php selected($selected, $calendar['id']); ?>>
+                    <?php echo esc_html($calendar['name']); ?>
                 </option>
             <?php endforeach; ?>
         </select>
