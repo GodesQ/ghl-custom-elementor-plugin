@@ -102,6 +102,7 @@ class GHL_Field_Mapper
      * @param array  $fields Submitted fields.
      * @param string $contact_id GHL contact ID.
      * @param array  $settings GHL settings.
+     * @param string $assigned_user_id Optional assigned GHL user ID.
      * @return array
      */
     public function build_opportunity_payload(array $fields, $contact_id, array $settings, $assigned_user_id = '')
