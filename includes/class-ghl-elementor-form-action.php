@@ -160,6 +160,7 @@ class GHL_Elementor_Form_Action extends \ElementorPro\Modules\Forms\Classes\Acti
         $api_client = $this->make_api_client($settings);
 
         $routing = $this->resolve_routing($settings, $fields);
+
         $contact_payload = $this->field_mapper->build_contact_payload(
             $fields,
             $settings['location_id'],
@@ -195,7 +196,7 @@ class GHL_Elementor_Form_Action extends \ElementorPro\Modules\Forms\Classes\Acti
 
         $opportunity_settings = $settings;
         $opportunity_settings['pipeline_stage_id'] = $routing['pipeline_stage_id'];
-        $opportunity_payload = $this->field_mapper->build_opportunity_payload($fields, $contact_id, $opportunity_settings);
+        $opportunity_payload = $this->field_mapper->build_opportunity_payload($fields, $contact_id, $opportunity_settings, $routing['assigned_user_id']);
         $opportunity_response = $api_client->create_opportunity($opportunity_payload);
 
         if (is_wp_error($opportunity_response)) {

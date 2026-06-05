@@ -2,7 +2,7 @@
 /**
  * Plugin Name: GHL Elementor Form Action
  * Description: Sends Elementor Pro form submissions to GoHighLevel Contacts and Opportunities.
- * Version: 2.0.0
+ * Version: 2.0.1
  * Text Domain: ghl-elementor
  */
 

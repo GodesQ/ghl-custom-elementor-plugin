@@ -104,7 +104,7 @@ class GHL_Field_Mapper
      * @param array  $settings GHL settings.
      * @return array
      */
-    public function build_opportunity_payload(array $fields, $contact_id, array $settings)
+    public function build_opportunity_payload(array $fields, $contact_id, array $settings, $assigned_user_id = '')
     {
         $full_name = trim(($fields['first_name'] ?? '') . ' ' . ($fields['last_name'] ?? ''));
 
@@ -112,7 +112,7 @@ class GHL_Field_Mapper
             $full_name = ($fields['email'] ?? '') ?: ($fields['phone'] ?? '');
         }
 
-        return [
+        $payload = [
             'locationId' => $settings['location_id'],
             'pipelineId' => $settings['pipeline_id'],
             'pipelineStageId' => $settings['pipeline_stage_id'],
@@ -122,6 +122,12 @@ class GHL_Field_Mapper
             'monetaryValue' => 0,
             'source' => $fields['source'] ?? self::INITIAL_SOURCE,
         ];
+
+        if (!empty($assigned_user_id)) {
+            $payload['assignedTo'] = $assigned_user_id;
+        }
+
+        return $payload;
     }
 
     /**
