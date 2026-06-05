@@ -29,16 +29,35 @@ jobs:
 
       # 4. Upload zip to cPanel server via SCP
       - name: Upload zip via SCP
+        env:
+          SSH_PORT: ${{ secrets.SSH_PORT || '22' }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          REMOTE_PATH: ${{ secrets.REMOTE_PATH }}
         run: |
-          scp -P ${{ secrets.SSH_PORT || '22' }} \
+          scp -P "$SSH_PORT" \
             ghl-custom-plugin.zip \
-            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.REMOTE_PATH }}/ghl-custom-plugin.zip
+            "$SSH_USER@$SSH_HOST:$REMOTE_PATH/ghl-custom-plugin.zip"
 
       # 5. SSH into server and unzip into target directory
       - name: Unzip on server
+        env:
+          SSH_PORT: ${{ secrets.SSH_PORT || '22' }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          REMOTE_PATH: ${{ secrets.REMOTE_PATH }}
         run: |
-          ssh -p ${{ secrets.SSH_PORT || '22' }} \
-            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
-            "cd ${{ secrets.REMOTE_PATH }} && \
-             unzip -o ghl-custom-plugin.zip && \
-             rm ghl-custom-plugin.zip"
+          ssh -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" 'sh -s' -- "$REMOTE_PATH" <<'EOF'
+            set -eu
+
+            remote_path="$1"
+            case "$remote_path" in
+              "~") remote_path="$HOME" ;;
+              "~/"*) remote_path="$HOME/${remote_path#~/}" ;;
+            esac
+
+            cd "$remote_path"
+
+            unzip -o ghl-custom-plugin.zip
+            rm -f ghl-custom-plugin.zip
+          EOF
