@@ -23,10 +23,16 @@ class GHL_Elementor_Plugin
      */
     private $admin_page;
 
+    /**
+     * @var GHL_Booking_Calendar_Shortcode
+     */
+    private $booking_calendar_shortcode;
+
     public function __construct()
     {
         $this->settings_repository = new GHL_Elementor_Settings();
         $this->admin_page = new GHL_Elementor_Admin_Page($this->settings_repository);
+        $this->booking_calendar_shortcode = new GHL_Booking_Calendar_Shortcode($this->settings_repository);
     }
 
     /**
@@ -38,6 +44,7 @@ class GHL_Elementor_Plugin
         add_action('wp_enqueue_scripts', [$this, 'enqueue_scripts']);
 
         $this->admin_page->register();
+        $this->booking_calendar_shortcode->register();
     }
 
     /**
