@@ -14,7 +14,7 @@ class GHL_Field_Mapper
     const INITIAL_SOURCE = 'Website Form';
     const PROGRESSIVE_FORM_NAME = 'Progressive Form';
     const LEAD_SCHEDULED_APPOINTMENT_FORM_NAME = 'Lead Schedule Appointment Form';
-    const INITIAL_TAG = 'Lead';
+    const INITIAL_TAG = 'lead';
     const PROGRESSIVE_ADD_TAG = 'strong lead';
     const PROGRESSIVE_REMOVE_TAG = 'lead';
     const APPOINTMENT_DURATION_MINUTES = 30;
@@ -68,9 +68,10 @@ class GHL_Field_Mapper
      * @param string $location_id GHL location ID.
      * @param string $message_custom_field_id Optional GHL custom field ID for message.
      * @param string $assigned_user_id Optional assigned GHL user ID.
+     * @param array  $additional_tags Additional contact tags.
      * @return array
      */
-    public function build_contact_payload(array $fields, $location_id, $message_custom_field_id = '', $assigned_user_id = '')
+    public function build_contact_payload(array $fields, $location_id, $message_custom_field_id = '', $assigned_user_id = '', array $additional_tags = [])
     {
         $payload = [
             'locationId' => $location_id,
@@ -84,6 +85,10 @@ class GHL_Field_Mapper
             ],
             'companyName' => $fields['company'] ?? '',
         ];
+
+        if (!empty($additional_tags)) {
+            $payload['tags'] = array_values(array_unique(array_merge($payload['tags'], $additional_tags)));
+        }
 
         if (!empty($assigned_user_id)) {
             $payload['assignedTo'] = $assigned_user_id;

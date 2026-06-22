@@ -226,6 +226,8 @@ class GHL_API_Client
             $users[] = [
                 'id' => (string) $item['id'],
                 'name' => $name,
+                'first_name' => (string) ($item['firstName'] ?? ''),
+                'last_name' => (string) ($item['lastName'] ?? ''),
                 'email' => (string) ($item['email'] ?? ''),
             ];
         }

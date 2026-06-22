@@ -160,12 +160,15 @@ class GHL_Elementor_Form_Action extends \ElementorPro\Modules\Forms\Classes\Acti
         $api_client = $this->make_api_client($settings);
 
         $routing = $this->resolve_routing($settings, $fields);
+        $assigned_user_tag = $this->get_assigned_user_lead_tag($settings, $routing['assigned_user_id']);
+        $additional_tags = $assigned_user_tag === '' ? [] : [$assigned_user_tag];
 
         $contact_payload = $this->field_mapper->build_contact_payload(
             $fields,
             $settings['location_id'],
             $settings['message_custom_field_id'],
-            $routing['assigned_user_id']
+            $routing['assigned_user_id'],
+            $additional_tags
         );
 
         $custom_fields = $this->field_mapper->build_initial_contact_custom_fields(
@@ -488,6 +491,7 @@ class GHL_Elementor_Form_Action extends \ElementorPro\Modules\Forms\Classes\Acti
             'state_user_map' => is_array($settings['state_user_map'] ?? null) ? $settings['state_user_map'] : [],
             'user_stage_map' => is_array($settings['user_stage_map'] ?? null) ? $settings['user_stage_map'] : [],
             'user_calendar_map' => is_array($settings['user_calendar_map'] ?? null) ? $settings['user_calendar_map'] : [],
+            'users' => is_array($settings['users'] ?? null) ? $settings['users'] : [],
         ];
     }
 
@@ -579,6 +583,61 @@ class GHL_Elementor_Form_Action extends \ElementorPro\Modules\Forms\Classes\Acti
             'assigned_user_id' => $assigned_user_id,
             'pipeline_stage_id' => $pipeline_stage_id,
         ];
+    }
+
+    /**
+     * Build the assigned-user-specific initial lead tag.
+     *
+     * @param array  $settings Dashboard settings.
+     * @param string $assigned_user_id Assigned GHL user ID.
+     * @return string
+     */
+    private function get_assigned_user_lead_tag(array $settings, $assigned_user_id)
+    {
+        $first_name = $this->get_assigned_user_first_name($settings['users'] ?? [], $assigned_user_id);
+
+        if ($first_name === '') {
+            $this->logger->error('Assigned user first name could not be resolved for lead tag.', [
+                'assigned_user_id' => $assigned_user_id,
+            ]);
+            return '';
+        }
+
+        return strtolower($first_name) . ' lead';
+    }
+
+    /**
+     * Get the first name for a saved GHL user.
+     *
+     * @param array  $users Saved GHL users.
+     * @param string $assigned_user_id Assigned GHL user ID.
+     * @return string
+     */
+    private function get_assigned_user_first_name(array $users, $assigned_user_id)
+    {
+        foreach ($users as $user) {
+            if (!is_array($user) || ($user['id'] ?? '') !== $assigned_user_id) {
+                continue;
+            }
+
+            $first_name = trim((string) ($user['first_name'] ?? ''));
+
+            if ($first_name !== '') {
+                return sanitize_text_field($first_name);
+            }
+
+            $name = trim((string) ($user['name'] ?? ''));
+
+            if ($name === '') {
+                return '';
+            }
+
+            $name_parts = preg_split('/\s+/', $name);
+
+            return sanitize_text_field($name_parts[0] ?? '');
+        }
+
+        return '';
     }
 
     /**
