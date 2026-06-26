@@ -390,6 +390,8 @@ class GHL_Elementor_Form_Action extends \ElementorPro\Modules\Forms\Classes\Acti
             'assigned_user_id' => $assigned_user_id,
         ]);
 
+        $this->add_scheduled_contact_tag($api_client, $contact_id);
+
         $this->add_redirect_response($settings, $contact_id, $opportunity_id, $ajax_handler);
     }
 
@@ -464,6 +466,24 @@ class GHL_Elementor_Form_Action extends \ElementorPro\Modules\Forms\Classes\Acti
 
         if (is_wp_error($remove_response)) {
             $this->logger->error('Removing original contact tag failed.', ['error' => $remove_response->get_error_message()]);
+        }
+    }
+
+    /**
+     * Add the scheduled appointment tag on a contact.
+     *
+     * @param GHL_API_Client $api_client API client.
+     * @param string         $contact_id Contact ID.
+     */
+    private function add_scheduled_contact_tag(GHL_API_Client $api_client, $contact_id)
+    {
+        $add_response = $api_client->add_contact_tags($contact_id, [GHL_Field_Mapper::SCHEDULED_TAG]);
+
+        if (is_wp_error($add_response)) {
+            $this->logger->error('Adding scheduled contact tag failed.', [
+                'error' => $add_response->get_error_message(),
+                'contact_id' => $contact_id,
+            ]);
         }
     }
 

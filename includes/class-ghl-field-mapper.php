@@ -17,6 +17,7 @@ class GHL_Field_Mapper
     const INITIAL_TAG = 'lead';
     const PROGRESSIVE_ADD_TAG = 'strong lead';
     const PROGRESSIVE_REMOVE_TAG = 'lead';
+    const SCHEDULED_TAG = 'scheduled';
     const APPOINTMENT_DURATION_MINUTES = 30;
     const APPOINTMENT_TITLE = 'Scheduled Appointment';
 
@@ -34,6 +35,31 @@ class GHL_Field_Mapper
     ];
 
     const PROGRESSIVE_OPPORTUNITY_FIELDS = [
+        'opportunity.floor_wrap_quantity' => 'floor_quantity',
+        'opportunity.floor_wrap_size' => 'floor_size',
+        'opportunity.floor_wrap_inspiration_1' => 'dance_floor_inspiration_1',
+        'opportunity.floor_wrap_inspiration_2' => 'dance_floor_inspiration_2',
+        'opportunity.floor_wrap_notes' => 'floor_notes',
+        'opportunity.aisle_quantity' => 'aisle_quantity',
+        'opportunity.aisle_size' => 'aisle_size',
+        'opportunity.aisle_inspiration_1' => 'aisle_inspiration_1',
+        'opportunity.aisle_inspiration_2' => 'aisle_inspiration_2',
+        'opportunity.aisle_notes' => 'aisle_notes',
+        'opportunity.breathtaking_enhancements_quantity' => 'enhancement_quantity',
+        'opportunity.breathtaking_enhancements_size' => 'enhancement_type',
+        'opportunity.breathtaking_enhancements_inspiration_1' => 'enhancement_inspiration_1',
+        'opportunity.breathtaking_enhancements_inspiration_2' => 'enhancement_inspiration_2',
+        'opportunity.breathtaking_enhancements_notes' => 'enhancement_notes',
+        'opportunity.specialized_touches_quantity' => 'specialized_quantity',
+        'opportunity.specialized_touches_size' => 'specialized_details',
+        'opportunity.specialized_touches_inspiration_1' => 'specialized_inspiration_1',
+        'opportunity.specialized_touches_inspiration_2' => 'specialized_inspiration_2',
+        'opportunity.specialized_touches_notes' => 'specialized_notes',
+        'opportunity.individualized_accents_quantity' => 'accent_quantity',
+        'opportunity.individualized_accents_size' => 'accent_details',
+        'opportunity.individualized_accents_inspiration_1' => 'accent_inspiration_1',
+        'opportunity.individualized_accents_inspiration_2' => 'accent_inspiration_2',
+        'opportunity.individualized_accents_notes' => 'accent_notes',
         'opportunity.item_finish' => 'dance_floor_wrap_finish',
         'opportunity.item_type' => 'dance_floor_wrap_type',
         'opportunity.venue_size' => 'venue_room_size',
@@ -288,7 +314,7 @@ class GHL_Field_Mapper
         foreach (self::PROGRESSIVE_OPPORTUNITY_FIELDS as $field_key => $form_field_id) {
             $field_value = $fields[$form_field_id] ?? '';
 
-            if ($field_value === null || $field_value === '') {
+            if ($field_value === null || $field_value === '' || (is_array($field_value) && empty($field_value))) {
                 continue;
             }
 

@@ -11,7 +11,7 @@ if (!defined('ABSPATH')) {
 
 class GHL_Elementor_Plugin
 {
-    const VERSION = '1.0.0';
+    const VERSION = '2.0.2';
 
     /**
      * @var GHL_Elementor_Settings
@@ -28,11 +28,17 @@ class GHL_Elementor_Plugin
      */
     private $booking_calendar_shortcode;
 
+    /**
+     * @var GHL_Progressive_Form_Controller
+     */
+    private $progressive_form_controller;
+
     public function __construct()
     {
         $this->settings_repository = new GHL_Elementor_Settings();
         $this->admin_page = new GHL_Elementor_Admin_Page($this->settings_repository);
         $this->booking_calendar_shortcode = new GHL_Booking_Calendar_Shortcode($this->settings_repository);
+        $this->progressive_form_controller = new GHL_Progressive_Form_Controller($this->settings_repository);
     }
 
     /**
@@ -45,6 +51,7 @@ class GHL_Elementor_Plugin
 
         $this->admin_page->register();
         $this->booking_calendar_shortcode->register();
+        $this->progressive_form_controller->register();
     }
 
     /**
@@ -74,6 +81,15 @@ class GHL_Elementor_Plugin
             [],
             self::VERSION,
             true
+        );
+
+        wp_localize_script(
+            'ghl-elementor-progressive-form-prefill',
+            'ghlElementorProgressiveForm',
+            [
+                'contactEndpoint' => esc_url_raw(rest_url('ghl-elementor/v1/progressive-form/contact')),
+                'submitEndpoint' => esc_url_raw(rest_url('ghl-elementor/v1/progressive-form/opportunity')),
+            ]
         );
     }
 }
