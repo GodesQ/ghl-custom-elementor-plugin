@@ -404,13 +404,7 @@ class GHL_Elementor_Form_Action extends \ElementorPro\Modules\Forms\Classes\Acti
      */
     private function send_progressive_webhook($contact_id, $opportunity_id, array $fields)
     {
-        $payload = [
-            'opportunity_id' => $opportunity_id,
-            'contact_id' => $contact_id,
-            'venue_size' => $fields['venue_room_size'] ?? '',
-            'product_type' => $fields['dance_floor_wrap_type'] ?? '',
-            'product_floor' => $fields['dance_floor_wrap_finish'] ?? '',
-        ];
+        $payload = $this->field_mapper->build_progressive_webhook_payload($contact_id, $opportunity_id, $fields);
 
         $response = wp_remote_post(
             self::PROGRESSIVE_WEBHOOK_URL,

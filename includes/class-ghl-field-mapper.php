@@ -65,6 +65,19 @@ class GHL_Field_Mapper
         'opportunity.venue_size' => 'venue_room_size',
     ];
 
+    const PROGRESSIVE_WEBHOOK_FIELDS = [
+        'floor_wrap_size' => 'floor_size',
+        'floor_wrap_notes' => 'floor_notes',
+        'aisle_size' => 'aisle_size',
+        'aisle_notes' => 'aisle_notes',
+        'breathtaking_enhancements_size' => 'enhancement_type',
+        'breathtaking_enhancements_notes' => 'enhancement_notes',
+        'specialized_touches_size' => 'specialized_details',
+        'specialized_touches_notes' => 'specialized_notes',
+        'individualized_accents_size' => 'accent_details',
+        'individualized_accents_notes' => 'accent_notes',
+    ];
+
     /**
      * Convert Elementor record fields into a simple sanitized array.
      *
@@ -332,5 +345,30 @@ class GHL_Field_Mapper
         }
 
         return $custom_fields;
+    }
+
+    /**
+     * Build progressive form webhook payload.
+     *
+     * @param string $contact_id Contact ID.
+     * @param string $opportunity_id Opportunity ID.
+     * @param array  $fields Submitted fields.
+     * @return array
+     */
+    public function build_progressive_webhook_payload($contact_id, $opportunity_id, array $fields)
+    {
+        $payload = [
+            'opportunity_id' => $opportunity_id,
+            'contact_id' => $contact_id,
+            'venue_size' => $fields['venue_room_size'] ?? '',
+            'product_type' => $fields['dance_floor_wrap_type'] ?? '',
+            'product_floor' => $fields['dance_floor_wrap_finish'] ?? '',
+        ];
+
+        foreach (self::PROGRESSIVE_WEBHOOK_FIELDS as $payload_key => $form_field_id) {
+            $payload[$payload_key] = $fields[$form_field_id] ?? '';
+        }
+
+        return $payload;
     }
 }

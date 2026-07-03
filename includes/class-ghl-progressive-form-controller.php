@@ -13,6 +13,7 @@ class GHL_Progressive_Form_Controller
 {
     const REST_NAMESPACE = 'ghl-elementor/v1';
     const EVENT_ITEM_FIELD_KEY = 'contact.event_item';
+    const PROGRESSIVE_WEBHOOK_URL = 'https://services.leadconnectorhq.com/hooks/7M5Xl7fUp1LSYtHLt72T/webhook-trigger/35864415-50cc-4cb2-ae42-a4177467476e';
 
     /**
      * @var GHL_Elementor_Settings
@@ -186,6 +187,7 @@ class GHL_Progressive_Form_Controller
             $this->logger->info('Progressive opportunity submission had no custom fields to update.', [
                 'opportunity_id' => $opportunity_id,
             ]);
+            $this->send_progressive_webhook($field_mapper, $contact_id, $opportunity_id, $fields);
 
             return rest_ensure_response([
                 'success' => true,
@@ -223,6 +225,7 @@ class GHL_Progressive_Form_Controller
 
         $this->update_progressive_contact_tags($api_client, $contact_id);
         $updated_fields = array_values(array_map([$this, 'get_custom_field_key'], $custom_fields));
+        $this->send_progressive_webhook($field_mapper, $contact_id, $opportunity_id, $fields);
 
         $this->logger->info('Progressive opportunity event details updated.', [
             'opportunity_id' => $opportunity_id,
@@ -233,6 +236,54 @@ class GHL_Progressive_Form_Controller
             'success' => true,
             'message' => 'Event details were submitted.',
             'updated_fields' => $updated_fields,
+        ]);
+    }
+
+    /**
+     * Send progressive form details to the configured webhook.
+     *
+     * @param GHL_Field_Mapper $field_mapper Field mapper.
+     * @param string           $contact_id Contact ID.
+     * @param string           $opportunity_id Opportunity ID.
+     * @param array            $fields Submitted fields.
+     */
+    private function send_progressive_webhook(GHL_Field_Mapper $field_mapper, $contact_id, $opportunity_id, array $fields)
+    {
+        $payload = $field_mapper->build_progressive_webhook_payload($contact_id, $opportunity_id, $fields);
+
+        $response = wp_remote_post(
+            self::PROGRESSIVE_WEBHOOK_URL,
+            [
+                'timeout' => GHL_API_Client::TIMEOUT,
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'Accept' => 'application/json',
+                ],
+                'body' => wp_json_encode($payload),
+            ]
+        );
+
+        if (is_wp_error($response)) {
+            $this->logger->error('Progressive webhook failed.', [
+                'error' => $response->get_error_message(),
+                'opportunity_id' => $opportunity_id,
+            ]);
+            return;
+        }
+
+        $status_code = wp_remote_retrieve_response_code($response);
+
+        if ($status_code < 200 || $status_code >= 300) {
+            $this->logger->error('Progressive webhook returned non-success status.', [
+                'status_code' => $status_code,
+                'opportunity_id' => $opportunity_id,
+            ]);
+            return;
+        }
+
+        $this->logger->info('Progressive webhook sent.', [
+            'status_code' => $status_code,
+            'opportunity_id' => $opportunity_id,
         ]);
     }
 
