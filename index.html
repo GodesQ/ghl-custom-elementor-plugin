@@ -3,9 +3,7 @@
         <h2>Dance Floor Estimate</h2>
 
         <p class="dfw-intro">
-            These items include dance floor wraps. You can
-            <a href="#" target="_blank">Click Here</a>
-            to see samples of our dance floor work.
+           These items include dance floor wraps. You can <a href="https://gotoshout.com/dance-floors/dance-floor-wraps/" target="_blank">Click Here</a> to see samples of our dance floor work.
         </p>
 
         <!-- Step Indicator -->
@@ -560,10 +558,39 @@
         const prevBtn = document.getElementById("dfwPrevBtn");
         const nextBtn = document.getElementById("dfwNextBtn");
         const submitBtn = document.getElementById("dfwSubmitBtn");
+        const formTitle = document.querySelector(".dfw-form-wrap h2");
+        const formIntro = document.querySelector(".dfw-intro");
         const statusMessage =
             document.getElementById("dfwFormStatus");
         const defaultSubmitText = submitBtn.textContent.trim();
         const successRedirectUrl = "https://gotoshout.com/thank-you/";
+        const stepIntroContent = {
+            "dance-floors": {
+                title: "Dance Floor Estimate",
+                intro:
+                    'These items include dance floor wraps. You can <a href="https://gotoshout.com/dance-floors/dance-floor-wraps/" target="_blank">Click Here</a> to see samples of our dance floor work.',
+            },
+            aisles: {
+                title: "Aisle Estimate",
+                intro:
+                    'These items include printed wraps, aisle runners, and acrylic aisles. You can <a href="https://gotoshout.com/aisles/aisle-wraps-and-runners/" target="_blank">Click Here</a> to see samples of our aisle work.',
+            },
+            "breathtaking-enhancements": {
+                title: "Breathtaking Enhancements Estimate",
+                intro:
+                    'These items include standalone prints, printed walls, pop-up backdrops, fabric pillowcase backdrops, and photobooths. You can <a href="https://gotoshout.com/breathtaking-enhancements/" target="_blank">Click Here</a> to see samples of our aisle work.',
+            },
+            "specialized-touches": {
+                title: "Specialized Touches Estimate",
+                intro:
+                    'These items include wraps, decals, and clings. You can <a href="https://gotoshout.com/specialized-touches/" target="_blank">Click Here</a> to see samples of our aisle work.',
+            },
+            "individualized-accents": {
+                title: "Individualized Accents Estimate",
+                intro:
+                    'These items include prints, menus, invitations, signage, etc. You can <a href="https://gotoshout.com/individualized-accents/" target="_blank">Click Here</a> to see samples of our aisle work.',
+            },
+        };
 
         let currentStep = 0;
         let visiblePanels = panels;
@@ -600,6 +627,20 @@
             currentStep = Math.max(0, Math.min(index, maxStep));
             const activePanel = visiblePanels[currentStep];
             const activeButton = visibleStepButtons[currentStep];
+            const activeStepKey = activePanel
+                ? activePanel.getAttribute("data-ghl-event-item")
+                : "";
+            const introContent = stepIntroContent[activeStepKey];
+
+            if (introContent) {
+                if (formTitle) {
+                    formTitle.textContent = introContent.title;
+                }
+
+                if (formIntro) {
+                    formIntro.innerHTML = introContent.intro;
+                }
+            }
 
             panels.forEach((panel) => {
                 panel.classList.toggle(
