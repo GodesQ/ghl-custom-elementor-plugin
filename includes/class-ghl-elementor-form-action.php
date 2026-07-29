@@ -14,6 +14,12 @@ class GHL_Elementor_Form_Action extends \ElementorPro\Modules\Forms\Classes\Acti
     const ACTION_NAME = 'ghl_contact_opportunity';
     const TEXT_DOMAIN = 'ghl-elementor';
     const PROGRESSIVE_WEBHOOK_URL = 'https://services.leadconnectorhq.com/hooks/7M5Xl7fUp1LSYtHLt72T/webhook-trigger/35864415-50cc-4cb2-ae42-a4177467476e';
+    const SHOUT_DASHBOARD_URL = 'https://gotoshoutdashboard.godesqsites.com';
+    const SHOUT_DASHBOARD_ROLES = [
+        'event professional',
+        'wedding venue representative',
+        'hotel representative',
+    ];
 
     /**
      * @var GHL_Logger
@@ -236,6 +242,12 @@ class GHL_Elementor_Form_Action extends \ElementorPro\Modules\Forms\Classes\Acti
             'contact_id' => $contact_id,
             'opportunity_id' => $opportunity_id,
         ]);
+
+        $role = strtolower(trim((string) ($fields['role'] ?? '')));
+
+        if (in_array($role, self::SHOUT_DASHBOARD_ROLES, true)) {
+            $settings['redirect_url'] = self::SHOUT_DASHBOARD_URL;
+        }
 
         $this->add_redirect_response($settings, $contact_id, $opportunity_id, $ajax_handler);
     }
