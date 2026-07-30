@@ -58,6 +58,18 @@ class GHL_API_Client
     }
 
     /**
+     * Update a GHL contact.
+     *
+     * @param string $contact_id Contact ID.
+     * @param array  $payload Contact payload.
+     * @return array|\WP_Error
+     */
+    public function update_contact($contact_id, array $payload)
+    {
+        return $this->request('/contacts/' . rawurlencode($contact_id), 'PUT', $payload);
+    }
+
+    /**
      * Get users for a GHL location.
      *
      * @param string $location_id Location ID.

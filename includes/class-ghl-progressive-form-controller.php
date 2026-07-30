@@ -132,7 +132,7 @@ class GHL_Progressive_Form_Controller
     }
 
     /**
-     * Save progressive custom HTML widget values to GHL opportunity custom fields.
+     * Save progressive custom HTML widget values to GHL contact and opportunity custom fields.
      *
      * @param \WP_REST_Request $request REST request.
      * @return \WP_REST_Response|\WP_Error
@@ -142,7 +142,7 @@ class GHL_Progressive_Form_Controller
         $settings = $this->settings_repository->get();
 
         if (empty($settings['token']) || empty($settings['location_id'])) {
-            $this->logger->error('Progressive opportunity submission skipped because GHL is not configured.');
+            $this->logger->error('Progressive submission skipped because GHL is not configured.');
 
             return new \WP_Error(
                 'ghl_progressive_not_configured',
@@ -177,14 +177,21 @@ class GHL_Progressive_Form_Controller
 
         $api_client = new GHL_API_Client($settings['token'], $this->logger);
         $field_mapper = new GHL_Field_Mapper();
-        $custom_fields = $field_mapper->build_progressive_opportunity_custom_fields(
+        $contact_custom_fields = $field_mapper->build_progressive_html_contact_custom_fields(
             $fields,
             $api_client,
             $settings['location_id']
         );
+        $opportunity_custom_fields = $field_mapper->build_progressive_html_opportunity_custom_fields(
+            $fields,
+            $api_client,
+            $settings['location_id']
+        );
+        $custom_fields = array_merge($contact_custom_fields, $opportunity_custom_fields);
 
         if (empty($custom_fields)) {
-            $this->logger->info('Progressive opportunity submission had no custom fields to update.', [
+            $this->logger->info('Progressive submission had no custom fields to update.', [
+                'contact_id' => $contact_id,
                 'opportunity_id' => $opportunity_id,
             ]);
             $this->send_progressive_webhook($field_mapper, $contact_id, $opportunity_id, $fields);
@@ -196,38 +203,68 @@ class GHL_Progressive_Form_Controller
             ]);
         }
 
-        $this->logger->info('Progressive opportunity submission fields mapped.', [
+        $this->logger->info('Progressive submission fields mapped.', [
+            'contact_id' => $contact_id,
             'opportunity_id' => $opportunity_id,
-            'mapped_fields' => array_values(array_map([$this, 'get_custom_field_key'], $custom_fields)),
+            'contact_fields' => array_values(array_map([$this, 'get_custom_field_key'], $contact_custom_fields)),
+            'opportunity_fields' => array_values(array_map([$this, 'get_custom_field_key'], $opportunity_custom_fields)),
             'file_fields' => $this->get_file_field_keys($fields),
         ]);
 
-        $custom_field_groups = $this->split_custom_fields_by_upload_type($custom_fields);
-        $response = $this->update_opportunity_custom_fields(
-            $api_client,
-            $opportunity_id,
-            $custom_field_groups['standard'],
-            $custom_field_groups['file']
-        );
-
-        if (is_wp_error($response)) {
-            $this->logger->error('Progressive opportunity submission failed.', [
-                'opportunity_id' => $opportunity_id,
-                'error' => $response->get_error_message(),
-            ]);
-
-            return new \WP_Error(
-                'ghl_progressive_update_failed',
-                'GHL opportunity could not be updated.',
-                ['status' => 502]
+        if (!empty($contact_custom_fields)) {
+            $contact_field_groups = $this->split_custom_fields_by_upload_type(
+                $contact_custom_fields,
+                GHL_Field_Mapper::PROGRESSIVE_HTML_CONTACT_FIELDS
             );
+            $contact_response = $this->update_contact_custom_fields(
+                $api_client,
+                $contact_id,
+                $contact_field_groups['standard'],
+                $contact_field_groups['file']
+            );
+
+            if (is_wp_error($contact_response)) {
+                $this->logger->error('Progressive contact custom field update failed.', [
+                    'contact_id' => $contact_id,
+                    'error' => $contact_response->get_error_message(),
+                ]);
+
+                return new \WP_Error(
+                    'ghl_progressive_update_failed',
+                    'GHL contact could not be updated.',
+                    ['status' => 502]
+                );
+            }
+        }
+
+        if (!empty($opportunity_custom_fields)) {
+            $opportunity_response = $this->update_opportunity_custom_fields(
+                $api_client,
+                $opportunity_id,
+                $opportunity_custom_fields,
+                []
+            );
+
+            if (is_wp_error($opportunity_response)) {
+                $this->logger->error('Progressive opportunity custom field update failed.', [
+                    'opportunity_id' => $opportunity_id,
+                    'error' => $opportunity_response->get_error_message(),
+                ]);
+
+                return new \WP_Error(
+                    'ghl_progressive_update_failed',
+                    'GHL opportunity could not be updated.',
+                    ['status' => 502]
+                );
+            }
         }
 
         $this->update_progressive_contact_tags($api_client, $contact_id);
         $updated_fields = array_values(array_map([$this, 'get_custom_field_key'], $custom_fields));
         $this->send_progressive_webhook($field_mapper, $contact_id, $opportunity_id, $fields);
 
-        $this->logger->info('Progressive opportunity event details updated.', [
+        $this->logger->info('Progressive event details updated.', [
+            'contact_id' => $contact_id,
             'opportunity_id' => $opportunity_id,
             'updated_fields' => $updated_fields,
         ]);
@@ -499,9 +536,10 @@ class GHL_Progressive_Form_Controller
      * Split uploaded file custom fields from normal text custom fields.
      *
      * @param array $custom_fields Mapped GHL custom fields.
+     * @param array $field_mapping GHL field keys mapped to form field IDs.
      * @return array
      */
-    private function split_custom_fields_by_upload_type(array $custom_fields)
+    private function split_custom_fields_by_upload_type(array $custom_fields, array $field_mapping)
     {
         $uploaded_field_lookup = array_fill_keys($this->uploaded_file_field_keys, true);
         $groups = [
@@ -511,13 +549,63 @@ class GHL_Progressive_Form_Controller
 
         foreach ($custom_fields as $custom_field) {
             $field_key = (string) ($custom_field['key'] ?? '');
-            $form_field_id = GHL_Field_Mapper::PROGRESSIVE_OPPORTUNITY_FIELDS[$field_key] ?? '';
+            $form_field_id = $field_mapping[$field_key] ?? '';
             $group_key = isset($uploaded_field_lookup[$form_field_id]) ? 'file' : 'standard';
 
             $groups[$group_key][] = $custom_field;
         }
 
         return $groups;
+    }
+
+    /**
+     * Update contact custom fields, resetting uploaded file fields before replacement.
+     *
+     * @param GHL_API_Client $api_client API client.
+     * @param string         $contact_id Contact ID.
+     * @param array          $standard_custom_fields Non-file custom fields.
+     * @param array          $file_custom_fields Uploaded file custom fields.
+     * @return array|\WP_Error
+     */
+    private function update_contact_custom_fields(
+        GHL_API_Client $api_client,
+        $contact_id,
+        array $standard_custom_fields,
+        array $file_custom_fields
+    ) {
+        $response = [];
+
+        if (!empty($standard_custom_fields)) {
+            $response = $api_client->update_contact($contact_id, [
+                'customFields' => $standard_custom_fields,
+            ]);
+
+            if (is_wp_error($response)) {
+                return $response;
+            }
+        }
+
+        if (empty($file_custom_fields)) {
+            return $response;
+        }
+
+        $clear_response = $api_client->update_contact($contact_id, [
+            'customFields' => $this->build_file_custom_field_clear_payload($file_custom_fields),
+        ]);
+
+        if (is_wp_error($clear_response)) {
+            $this->logger->error('Progressive contact file field reset failed before upload update.', [
+                'contact_id' => $contact_id,
+                'file_fields' => array_values(array_map([$this, 'get_custom_field_key'], $file_custom_fields)),
+                'error' => $clear_response->get_error_message(),
+            ]);
+
+            return $clear_response;
+        }
+
+        return $api_client->update_contact($contact_id, [
+            'customFields' => $file_custom_fields,
+        ]);
     }
 
     /**

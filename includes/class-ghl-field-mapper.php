@@ -65,6 +65,40 @@ class GHL_Field_Mapper
         'opportunity.venue_size' => 'venue_room_size',
     ];
 
+    const PROGRESSIVE_HTML_CONTACT_FIELDS = [
+        'contact.floor_wrap_quantity' => 'floor_quantity',
+        'contact.floor_wrap_size' => 'floor_size',
+        'contact.dance_floor_inspiration_1' => 'dance_floor_inspiration_1',
+        'contact.dance_floor_inspiration_2' => 'dance_floor_inspiration_2',
+        'contact.floor_wrap_notes' => 'floor_notes',
+        'contact.aisle_quantity' => 'aisle_quantity',
+        'contact.aisle_size' => 'aisle_size',
+        'contact.aisle_inspiration_1' => 'aisle_inspiration_1',
+        'contact.aisle_inspiration_2' => 'aisle_inspiration_2',
+        'contact.aisle_notes' => 'aisle_notes',
+        'contact.breathtaking_enhancements_quantity' => 'enhancement_quantity',
+        'contact.breathtaking_enhancements_size' => 'enhancement_type',
+        'contact.breathtaking_enhancements_inspiration_1' => 'enhancement_inspiration_1',
+        'contact.breathtaking_enhancements_inspiration_2' => 'enhancement_inspiration_2',
+        'contact.breathtaking_enhancement_note' => 'enhancement_notes',
+        'contact.specialized_touches_quantity' => 'specialized_quantity',
+        'contact.specialized_touches_size' => 'specialized_details',
+        'contact.specialized_touches_inspiration_1' => 'specialized_inspiration_1',
+        'contact.specialized_touches_inspiration_2' => 'specialized_inspiration_2',
+        'contact.specialized_touches_note' => 'specialized_notes',
+        'contact.individualized_accents_quantity' => 'accent_quantity',
+        'contact.individualized_accents_size' => 'accent_details',
+        'contact.individualized_accents_inspiration_1' => 'accent_inspiration_1',
+        'contact.individualized_accents_inspiration_2' => 'accent_inspiration_2',
+        'contact.individualized_accents_note' => 'accent_notes',
+    ];
+
+    const PROGRESSIVE_HTML_OPPORTUNITY_FIELDS = [
+        'opportunity.item_finish' => 'dance_floor_wrap_finish',
+        'opportunity.item_type' => 'dance_floor_wrap_type',
+        'opportunity.venue_size' => 'venue_room_size',
+    ];
+
     const PROGRESSIVE_WEBHOOK_FIELDS = [
         'floor_wrap_size' => 'floor_size',
         'floor_wrap_notes' => 'floor_notes',
@@ -322,9 +356,68 @@ class GHL_Field_Mapper
      */
     public function build_progressive_opportunity_custom_fields(array $fields, GHL_API_Client $api_client, $location_id)
     {
+        return $this->build_custom_fields(
+            $fields,
+            self::PROGRESSIVE_OPPORTUNITY_FIELDS,
+            $api_client,
+            $location_id
+        );
+    }
+
+    /**
+     * Build contact custom fields for the progressive HTML/REST form.
+     *
+     * @param array          $fields Submitted fields.
+     * @param GHL_API_Client $api_client API client.
+     * @param string         $location_id GHL location ID.
+     * @return array
+     */
+    public function build_progressive_html_contact_custom_fields(array $fields, GHL_API_Client $api_client, $location_id)
+    {
+        return $this->build_custom_fields(
+            $fields,
+            self::PROGRESSIVE_HTML_CONTACT_FIELDS,
+            $api_client,
+            $location_id
+        );
+    }
+
+    /**
+     * Build retained opportunity custom fields for the progressive HTML/REST form.
+     *
+     * @param array          $fields Submitted fields.
+     * @param GHL_API_Client $api_client API client.
+     * @param string         $location_id GHL location ID.
+     * @return array
+     */
+    public function build_progressive_html_opportunity_custom_fields(array $fields, GHL_API_Client $api_client, $location_id)
+    {
+        return $this->build_custom_fields(
+            $fields,
+            self::PROGRESSIVE_HTML_OPPORTUNITY_FIELDS,
+            $api_client,
+            $location_id
+        );
+    }
+
+    /**
+     * Build custom fields from a GHL field key to form field mapping.
+     *
+     * @param array          $fields Submitted fields.
+     * @param array          $field_mapping GHL field keys mapped to form field IDs.
+     * @param GHL_API_Client $api_client API client.
+     * @param string         $location_id GHL location ID.
+     * @return array
+     */
+    private function build_custom_fields(
+        array $fields,
+        array $field_mapping,
+        GHL_API_Client $api_client,
+        $location_id
+    ) {
         $custom_fields = [];
 
-        foreach (self::PROGRESSIVE_OPPORTUNITY_FIELDS as $field_key => $form_field_id) {
+        foreach ($field_mapping as $field_key => $form_field_id) {
             $field_value = $fields[$form_field_id] ?? '';
 
             if ($field_value === null || $field_value === '' || (is_array($field_value) && empty($field_value))) {
