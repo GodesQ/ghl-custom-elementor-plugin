@@ -46,6 +46,7 @@ class GHL_Elementor_Settings
         'new hampshire' => 'NH',
         'new jersey' => 'NJ',
         'new mexico' => 'NM',
+        'new orleans' => 'NO',
         'new york' => 'NY',
         'north carolina' => 'NC',
         'north dakota' => 'ND',
