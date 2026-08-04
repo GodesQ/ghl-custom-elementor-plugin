@@ -145,7 +145,7 @@ class GHL_Elementor_Form_Action extends \ElementorPro\Modules\Forms\Classes\Acti
     }
 
     /**
-     * Handle the first form submission that creates a contact and opportunity.
+     * Handle the first form submission that upserts a contact and opportunity.
      *
      * @param array  $settings Action settings.
      * @param array  $fields Submitted fields.
@@ -222,11 +222,11 @@ class GHL_Elementor_Form_Action extends \ElementorPro\Modules\Forms\Classes\Acti
             $opportunity_payload['customFields'] = $opportunity_custom_fields;
         }
 
-        $opportunity_response = $api_client->create_opportunity($opportunity_payload);
+        $opportunity_response = $api_client->upsert_opportunity($opportunity_payload);
 
         if (is_wp_error($opportunity_response)) {
-            $this->logger->error('Opportunity creation failed.', ['error' => $opportunity_response->get_error_message()]);
-            $ajax_handler->add_error_message('Contact saved, but opportunity could not be created.');
+            $this->logger->error('Opportunity upsert failed.', ['error' => $opportunity_response->get_error_message()]);
+            $ajax_handler->add_error_message('Contact saved, but opportunity could not be saved.');
             return;
         }
 
@@ -234,11 +234,11 @@ class GHL_Elementor_Form_Action extends \ElementorPro\Modules\Forms\Classes\Acti
 
         if (empty($opportunity_id)) {
             $this->logger->error('Opportunity response missing ID.');
-            $ajax_handler->add_error_message('Opportunity was created but no opportunity ID was returned.');
+            $ajax_handler->add_error_message('Opportunity was saved but no opportunity ID was returned.');
             return;
         }
 
-        $this->logger->info('Contact and opportunity created.', [
+        $this->logger->info('Contact and opportunity upserted.', [
             'contact_id' => $contact_id,
             'opportunity_id' => $opportunity_id,
         ]);

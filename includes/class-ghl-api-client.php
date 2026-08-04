@@ -114,6 +114,17 @@ class GHL_API_Client
     }
 
     /**
+     * Create or update a GHL opportunity.
+     *
+     * @param array $payload Opportunity payload.
+     * @return array|\WP_Error
+     */
+    public function upsert_opportunity(array $payload)
+    {
+        return $this->request('/opportunities/upsert', 'POST', $payload);
+    }
+
+    /**
      * Create a GHL calendar appointment.
      *
      * @param array $payload Appointment payload.
