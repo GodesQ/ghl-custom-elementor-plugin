@@ -80,19 +80,30 @@
 
                 <div class="dfw-dimensions" data-dimension-group>
                     <div class="dfw-field dfw-quantity-field">
-                    <label for="floorQuantity"
-                        >Quantity</label
-                    >
-                    <input
-                        id="floorQuantity"
-                        name="floor_quantity"
-                        type="text"
-                    />
+                        <label for="floorQuantity">Quantity</label>
+                        <input
+                            id="floorQuantity"
+                            name="floor_quantity"
+                            type="text"
+                        />
                     </div>
                     <div class="dfw-field">
-                        <label for="floorWidth"
-                            >Width</label
+                        <label for="floorUnit"
+                            >Unit of Measurement</label
                         >
+                        <select
+                            id="floorUnit"
+                            name="floor_unit"
+                            data-dimension-unit
+                        >
+                            <option value="inches" selected>
+                                Inches
+                            </option>
+                            <option value="feet">Feet</option>
+                        </select>
+                    </div>
+                    <div class="dfw-field">
+                        <label for="floorWidth">Width</label>
                         <input
                             id="floorWidth"
                             name="floor_width"
@@ -117,21 +128,6 @@
                             inputmode="decimal"
                             data-dimension-value
                         />
-                    </div>
-                    <div class="dfw-field">
-                        <label for="floorUnit"
-                            >Unit of Measurement</label
-                        >
-                        <select
-                            id="floorUnit"
-                            name="floor_unit"
-                            data-dimension-unit
-                        >
-                            <option value="inches" selected>
-                                Inches
-                            </option>
-                            <option value="feet">Feet</option>
-                        </select>
                     </div>
                     <input
                         type="hidden"
@@ -161,7 +157,6 @@
                             type="file"
                             name="dance_floor_inspiration_1"
                             accept=".pdf,.doc,.docx,.xls,.csv,.jpg,.jpeg,.png,.gif"
-                            required
                         />
                         <span class="dfw-upload-icon">↥</span>
                         <small
@@ -216,19 +211,30 @@
 
                 <div class="dfw-dimensions" data-dimension-group>
                     <div class="dfw-field dfw-quantity-field">
-                    <label for="aisleQuantity"
-                        >Quantity</label
-                    >
-                    <input
-                        id="aisleQuantity"
-                        name="aisle_quantity"
-                        type="text"
-                    />
+                        <label for="aisleQuantity">Quantity</label>
+                        <input
+                            id="aisleQuantity"
+                            name="aisle_quantity"
+                            type="text"
+                        />
                     </div>
                     <div class="dfw-field">
-                        <label for="aisleWidth"
-                            >Width</label
+                        <label for="aisleUnit"
+                            >Unit of Measurement</label
                         >
+                        <select
+                            id="aisleUnit"
+                            name="aisle_unit"
+                            data-dimension-unit
+                        >
+                            <option value="inches" selected>
+                                Inches
+                            </option>
+                            <option value="feet">Feet</option>
+                        </select>
+                    </div>
+                    <div class="dfw-field">
+                        <label for="aisleWidth">Width</label>
                         <input
                             id="aisleWidth"
                             name="aisle_width"
@@ -253,21 +259,6 @@
                             data-dimension-value
                         />
                     </div>
-                    <div class="dfw-field">
-                        <label for="aisleUnit"
-                            >Unit of Measurement</label
-                        >
-                        <select
-                            id="aisleUnit"
-                            name="aisle_unit"
-                            data-dimension-unit
-                        >
-                            <option value="inches" selected>
-                                Inches
-                            </option>
-                            <option value="feet">Feet</option>
-                        </select>
-                    </div>
                     <input
                         type="hidden"
                         name="aisle_size"
@@ -290,7 +281,6 @@
                             type="file"
                             name="aisle_inspiration_1"
                             accept=".pdf,.doc,.docx,.xls,.csv,.jpg,.jpeg,.png,.gif"
-                            required
                         />
                         <span class="dfw-upload-icon">↥</span>
                         <small
@@ -339,19 +329,32 @@
 
                 <div class="dfw-dimensions" data-dimension-group>
                     <div class="dfw-field dfw-quantity-field">
-                    <label for="enhancementQuantity"
-                        >Quantity</label
-                    >
-                    <input
-                        id="enhancementQuantity"
-                        name="enhancement_quantity"
-                        type="text"
-                    />
+                        <label for="enhancementQuantity"
+                            >Quantity</label
+                        >
+                        <input
+                            id="enhancementQuantity"
+                            name="enhancement_quantity"
+                            type="text"
+                        />
                     </div>
                     <div class="dfw-field">
-                        <label for="enhancementWidth"
-                            >Width</label
+                        <label for="enhancementUnit"
+                            >Unit of Measurement</label
                         >
+                        <select
+                            id="enhancementUnit"
+                            name="enhancement_unit"
+                            data-dimension-unit
+                        >
+                            <option value="inches" selected>
+                                Inches
+                            </option>
+                            <option value="feet">Feet</option>
+                        </select>
+                    </div>
+                    <div class="dfw-field">
+                        <label for="enhancementWidth">Width</label>
                         <input
                             id="enhancementWidth"
                             name="enhancement_width"
@@ -376,21 +379,6 @@
                             data-dimension-value
                         />
                     </div>
-                    <div class="dfw-field">
-                        <label for="enhancementUnit"
-                            >Unit of Measurement</label
-                        >
-                        <select
-                            id="enhancementUnit"
-                            name="enhancement_unit"
-                            data-dimension-unit
-                        >
-                            <option value="inches" selected>
-                                Inches
-                            </option>
-                            <option value="feet">Feet</option>
-                        </select>
-                    </div>
                     <input
                         type="hidden"
                         name="enhancement_type"
@@ -413,7 +401,6 @@
                             type="file"
                             name="enhancement_inspiration_1"
                             accept=".pdf,.doc,.docx,.xls,.csv,.jpg,.jpeg,.png,.gif"
-                            required
                         />
                         <span class="dfw-upload-icon">↥</span>
                         <small
@@ -464,19 +451,32 @@
 
                 <div class="dfw-dimensions" data-dimension-group>
                     <div class="dfw-field dfw-quantity-field">
-                    <label for="specializedQuantity"
-                        >Quantity</label
-                    >
-                    <input
-                        id="specializedQuantity"
-                        name="specialized_quantity"
-                        type="text"
-                    />
+                        <label for="specializedQuantity"
+                            >Quantity</label
+                        >
+                        <input
+                            id="specializedQuantity"
+                            name="specialized_quantity"
+                            type="text"
+                        />
                     </div>
                     <div class="dfw-field">
-                        <label for="specializedWidth"
-                            >Width</label
+                        <label for="specializedUnit"
+                            >Unit of Measurement</label
                         >
+                        <select
+                            id="specializedUnit"
+                            name="specialized_unit"
+                            data-dimension-unit
+                        >
+                            <option value="inches" selected>
+                                Inches
+                            </option>
+                            <option value="feet">Feet</option>
+                        </select>
+                    </div>
+                    <div class="dfw-field">
+                        <label for="specializedWidth">Width</label>
                         <input
                             id="specializedWidth"
                             name="specialized_width"
@@ -501,21 +501,6 @@
                             data-dimension-value
                         />
                     </div>
-                    <div class="dfw-field">
-                        <label for="specializedUnit"
-                            >Unit of Measurement</label
-                        >
-                        <select
-                            id="specializedUnit"
-                            name="specialized_unit"
-                            data-dimension-unit
-                        >
-                            <option value="inches" selected>
-                                Inches
-                            </option>
-                            <option value="feet">Feet</option>
-                        </select>
-                    </div>
                     <input
                         type="hidden"
                         name="specialized_details"
@@ -537,7 +522,6 @@
                             type="file"
                             name="specialized_inspiration_1"
                             accept=".pdf,.doc,.docx,.xls,.csv,.jpg,.jpeg,.png,.gif"
-                            required
                         />
                         <span class="dfw-upload-icon">↥</span>
                         <small
@@ -588,19 +572,30 @@
 
                 <div class="dfw-dimensions" data-dimension-group>
                     <div class="dfw-field dfw-quantity-field">
-                    <label for="accentQuantity"
-                        >Quantity</label
-                    >
-                    <input
-                        id="accentQuantity"
-                        name="accent_quantity"
-                        type="text"
-                    />
+                        <label for="accentQuantity">Quantity</label>
+                        <input
+                            id="accentQuantity"
+                            name="accent_quantity"
+                            type="text"
+                        />
                     </div>
                     <div class="dfw-field">
-                        <label for="accentWidth"
-                            >Width</label
+                        <label for="accentUnit"
+                            >Unit of Measurement</label
                         >
+                        <select
+                            id="accentUnit"
+                            name="accent_unit"
+                            data-dimension-unit
+                        >
+                            <option value="inches" selected>
+                                Inches
+                            </option>
+                            <option value="feet">Feet</option>
+                        </select>
+                    </div>
+                    <div class="dfw-field">
+                        <label for="accentWidth">Width</label>
                         <input
                             id="accentWidth"
                             name="accent_width"
@@ -625,21 +620,6 @@
                             data-dimension-value
                         />
                     </div>
-                    <div class="dfw-field">
-                        <label for="accentUnit"
-                            >Unit of Measurement</label
-                        >
-                        <select
-                            id="accentUnit"
-                            name="accent_unit"
-                            data-dimension-unit
-                        >
-                            <option value="inches" selected>
-                                Inches
-                            </option>
-                            <option value="feet">Feet</option>
-                        </select>
-                    </div>
                     <input
                         type="hidden"
                         name="accent_details"
@@ -662,7 +642,6 @@
                             type="file"
                             name="accent_inspiration_1"
                             accept=".pdf,.doc,.docx,.xls,.csv,.jpg,.jpeg,.png,.gif"
-                            required
                         />
                         <span class="dfw-upload-icon">↥</span>
                         <small
@@ -736,66 +715,6 @@
         </form>
     </div>
 </section>
-
-<style>
-    .dfw-field-error {
-        color: #b42318;
-        font-size: 0.875rem;
-        line-height: 1.4;
-        margin: 0.375rem 0 0;
-    }
-
-    .dfw-upload.dfw-error,
-    .dfw-field textarea.dfw-error,
-    .dfw-field input.dfw-error:not([type="file"]),
-    .dfw-field select.dfw-error {
-        border-color: #b42318;
-    }
-
-    .dfw-dimensions {
-        display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 1rem;
-    }
-
-    .dfw-dimensions > .dfw-quantity-field {
-        order: 1;
-    }
-
-    .dfw-dimensions > .dfw-field:nth-child(4) {
-        order: 2;
-    }
-
-    .dfw-dimensions > .dfw-field:nth-child(3) {
-        order: 3;
-    }
-
-    .dfw-dimensions > .dfw-field:nth-child(2) {
-        order: 4;
-    }
-
-    .dfw-dimensions > .dfw-field-error {
-        grid-column: 1 / -1;
-        margin-top: -0.625rem;
-    }
-
-    @media (max-width: 900px) {
-        .dfw-dimensions {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
-    }
-
-    @media (max-width: 520px) {
-        .dfw-dimensions {
-            grid-template-columns: 1fr;
-        }
-
-        .dfw-dimensions > .dfw-field-error {
-            grid-column: auto;
-            margin-top: 0;
-        }
-    }
-</style>
 
 <script>
     (function () {
