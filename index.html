@@ -3,7 +3,13 @@
         <h2>Dance Floor Estimate</h2>
 
         <p class="dfw-intro">
-           These items include dance floor wraps. You can <a href="https://gotoshout.com/dance-floors/dance-floor-wraps/" target="_blank">Click Here</a> to see samples of our dance floor work.
+            These items include dance floor wraps. You can
+            <a
+                href="https://gotoshout.com/dance-floors/dance-floor-wraps/"
+                target="_blank"
+                >Click Here</a
+            >
+            to see samples of our dance floor work.
         </p>
 
         <!-- Step Indicator -->
@@ -72,23 +78,65 @@
             >
                 <h3>Dance Floor Wraps</h3>
 
-                <div class="dfw-field">
+                <div class="dfw-dimensions" data-dimension-group>
+                    <div class="dfw-field dfw-quantity-field">
                     <label for="floorQuantity"
-                        >Floor Wrap: Quantity</label
+                        >Quantity</label
                     >
                     <input
                         id="floorQuantity"
                         name="floor_quantity"
                         type="text"
                     />
-                </div>
+                    </div>
+                    <div class="dfw-field">
+                        <label for="floorWidth"
+                            >Width</label
+                        >
+                        <input
+                            id="floorWidth"
+                            name="floor_width"
+                            type="number"
+                            min="0.01"
+                            step="any"
+                            inputmode="decimal"
+                            data-dimension-value
+                        />
+                    </div>
 
-                <div class="dfw-field">
-                    <label for="floorSize">Floor Wrap: Size</label>
+                    <div class="dfw-field">
+                        <label for="floorHeight"
+                            >Length / Height</label
+                        >
+                        <input
+                            id="floorHeight"
+                            name="floor_height"
+                            type="number"
+                            min="0.01"
+                            step="any"
+                            inputmode="decimal"
+                            data-dimension-value
+                        />
+                    </div>
+                    <div class="dfw-field">
+                        <label for="floorUnit"
+                            >Unit of Measurement</label
+                        >
+                        <select
+                            id="floorUnit"
+                            name="floor_unit"
+                            data-dimension-unit
+                        >
+                            <option value="inches" selected>
+                                Inches
+                            </option>
+                            <option value="feet">Feet</option>
+                        </select>
+                    </div>
                     <input
-                        id="floorSize"
+                        type="hidden"
                         name="floor_size"
-                        type="text"
+                        data-dimension-output
                     />
                 </div>
 
@@ -166,23 +214,64 @@
             >
                 <h3>Aisles</h3>
 
-                <div class="dfw-field">
+                <div class="dfw-dimensions" data-dimension-group>
+                    <div class="dfw-field dfw-quantity-field">
                     <label for="aisleQuantity"
-                        >Aisle Wrap: Quantity</label
+                        >Quantity</label
                     >
                     <input
                         id="aisleQuantity"
                         name="aisle_quantity"
                         type="text"
                     />
-                </div>
-
-                <div class="dfw-field">
-                    <label for="aisleSize">Aisle Wrap: Size</label>
+                    </div>
+                    <div class="dfw-field">
+                        <label for="aisleWidth"
+                            >Width</label
+                        >
+                        <input
+                            id="aisleWidth"
+                            name="aisle_width"
+                            type="number"
+                            min="0.01"
+                            step="any"
+                            inputmode="decimal"
+                            data-dimension-value
+                        />
+                    </div>
+                    <div class="dfw-field">
+                        <label for="aisleHeight"
+                            >Length / Height</label
+                        >
+                        <input
+                            id="aisleHeight"
+                            name="aisle_height"
+                            type="number"
+                            min="0.01"
+                            step="any"
+                            inputmode="decimal"
+                            data-dimension-value
+                        />
+                    </div>
+                    <div class="dfw-field">
+                        <label for="aisleUnit"
+                            >Unit of Measurement</label
+                        >
+                        <select
+                            id="aisleUnit"
+                            name="aisle_unit"
+                            data-dimension-unit
+                        >
+                            <option value="inches" selected>
+                                Inches
+                            </option>
+                            <option value="feet">Feet</option>
+                        </select>
+                    </div>
                     <input
-                        id="aisleSize"
+                        type="hidden"
                         name="aisle_size"
-                        type="text"
+                        data-dimension-output
                     />
                 </div>
 
@@ -248,25 +337,64 @@
             >
                 <h3>Breathtaking Enhancements</h3>
 
-                <div class="dfw-field">
+                <div class="dfw-dimensions" data-dimension-group>
+                    <div class="dfw-field dfw-quantity-field">
                     <label for="enhancementQuantity"
-                        >Enhancements: Quantity</label
+                        >Quantity</label
                     >
                     <input
                         id="enhancementQuantity"
                         name="enhancement_quantity"
                         type="text"
                     />
-                </div>
-
-                <div class="dfw-field">
-                    <label for="enhancementType"
-                        >Enhancements: Type / Size</label
-                    >
+                    </div>
+                    <div class="dfw-field">
+                        <label for="enhancementWidth"
+                            >Width</label
+                        >
+                        <input
+                            id="enhancementWidth"
+                            name="enhancement_width"
+                            type="number"
+                            min="0.01"
+                            step="any"
+                            inputmode="decimal"
+                            data-dimension-value
+                        />
+                    </div>
+                    <div class="dfw-field">
+                        <label for="enhancementHeight"
+                            >Length / Height</label
+                        >
+                        <input
+                            id="enhancementHeight"
+                            name="enhancement_height"
+                            type="number"
+                            min="0.01"
+                            step="any"
+                            inputmode="decimal"
+                            data-dimension-value
+                        />
+                    </div>
+                    <div class="dfw-field">
+                        <label for="enhancementUnit"
+                            >Unit of Measurement</label
+                        >
+                        <select
+                            id="enhancementUnit"
+                            name="enhancement_unit"
+                            data-dimension-unit
+                        >
+                            <option value="inches" selected>
+                                Inches
+                            </option>
+                            <option value="feet">Feet</option>
+                        </select>
+                    </div>
                     <input
-                        id="enhancementType"
+                        type="hidden"
                         name="enhancement_type"
-                        type="text"
+                        data-dimension-output
                     />
                 </div>
 
@@ -334,25 +462,64 @@
             >
                 <h3>Specialized Touches</h3>
 
-                <div class="dfw-field">
+                <div class="dfw-dimensions" data-dimension-group>
+                    <div class="dfw-field dfw-quantity-field">
                     <label for="specializedQuantity"
-                        >Specialized Touches: Quantity</label
+                        >Quantity</label
                     >
                     <input
                         id="specializedQuantity"
                         name="specialized_quantity"
                         type="text"
                     />
-                </div>
-
-                <div class="dfw-field">
-                    <label for="specializedDetails"
-                        >Specialized Touches: Size / Details</label
-                    >
+                    </div>
+                    <div class="dfw-field">
+                        <label for="specializedWidth"
+                            >Width</label
+                        >
+                        <input
+                            id="specializedWidth"
+                            name="specialized_width"
+                            type="number"
+                            min="0.01"
+                            step="any"
+                            inputmode="decimal"
+                            data-dimension-value
+                        />
+                    </div>
+                    <div class="dfw-field">
+                        <label for="specializedHeight"
+                            >Length / Height</label
+                        >
+                        <input
+                            id="specializedHeight"
+                            name="specialized_height"
+                            type="number"
+                            min="0.01"
+                            step="any"
+                            inputmode="decimal"
+                            data-dimension-value
+                        />
+                    </div>
+                    <div class="dfw-field">
+                        <label for="specializedUnit"
+                            >Unit of Measurement</label
+                        >
+                        <select
+                            id="specializedUnit"
+                            name="specialized_unit"
+                            data-dimension-unit
+                        >
+                            <option value="inches" selected>
+                                Inches
+                            </option>
+                            <option value="feet">Feet</option>
+                        </select>
+                    </div>
                     <input
-                        id="specializedDetails"
+                        type="hidden"
                         name="specialized_details"
-                        type="text"
+                        data-dimension-output
                     />
                 </div>
 
@@ -419,25 +586,64 @@
             >
                 <h3>Individualized Accents</h3>
 
-                <div class="dfw-field">
+                <div class="dfw-dimensions" data-dimension-group>
+                    <div class="dfw-field dfw-quantity-field">
                     <label for="accentQuantity"
-                        >Individualized Accents: Quantity</label
+                        >Quantity</label
                     >
                     <input
                         id="accentQuantity"
                         name="accent_quantity"
                         type="text"
                     />
-                </div>
-
-                <div class="dfw-field">
-                    <label for="accentDetails"
-                        >Individualized Accents: Size / Details</label
-                    >
+                    </div>
+                    <div class="dfw-field">
+                        <label for="accentWidth"
+                            >Width</label
+                        >
+                        <input
+                            id="accentWidth"
+                            name="accent_width"
+                            type="number"
+                            min="0.01"
+                            step="any"
+                            inputmode="decimal"
+                            data-dimension-value
+                        />
+                    </div>
+                    <div class="dfw-field">
+                        <label for="accentHeight"
+                            >Length / Height</label
+                        >
+                        <input
+                            id="accentHeight"
+                            name="accent_height"
+                            type="number"
+                            min="0.01"
+                            step="any"
+                            inputmode="decimal"
+                            data-dimension-value
+                        />
+                    </div>
+                    <div class="dfw-field">
+                        <label for="accentUnit"
+                            >Unit of Measurement</label
+                        >
+                        <select
+                            id="accentUnit"
+                            name="accent_unit"
+                            data-dimension-unit
+                        >
+                            <option value="inches" selected>
+                                Inches
+                            </option>
+                            <option value="feet">Feet</option>
+                        </select>
+                    </div>
                     <input
-                        id="accentDetails"
+                        type="hidden"
                         name="accent_details"
-                        type="text"
+                        data-dimension-output
                     />
                 </div>
 
@@ -541,8 +747,53 @@
 
     .dfw-upload.dfw-error,
     .dfw-field textarea.dfw-error,
-    .dfw-field input.dfw-error:not([type="file"]) {
+    .dfw-field input.dfw-error:not([type="file"]),
+    .dfw-field select.dfw-error {
         border-color: #b42318;
+    }
+
+    .dfw-dimensions {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 1rem;
+    }
+
+    .dfw-dimensions > .dfw-quantity-field {
+        order: 1;
+    }
+
+    .dfw-dimensions > .dfw-field:nth-child(4) {
+        order: 2;
+    }
+
+    .dfw-dimensions > .dfw-field:nth-child(3) {
+        order: 3;
+    }
+
+    .dfw-dimensions > .dfw-field:nth-child(2) {
+        order: 4;
+    }
+
+    .dfw-dimensions > .dfw-field-error {
+        grid-column: 1 / -1;
+        margin-top: -0.625rem;
+    }
+
+    @media (max-width: 900px) {
+        .dfw-dimensions {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 520px) {
+        .dfw-dimensions {
+            grid-template-columns: 1fr;
+        }
+
+        .dfw-dimensions > .dfw-field-error {
+            grid-column: auto;
+            margin-top: 0;
+        }
     }
 </style>
 
@@ -562,33 +813,31 @@
         const formIntro = document.querySelector(".dfw-intro");
         const statusMessage =
             document.getElementById("dfwFormStatus");
+        const dimensionGroups = Array.from(
+            form.querySelectorAll("[data-dimension-group]"),
+        );
         const defaultSubmitText = submitBtn.textContent.trim();
         const successRedirectUrl = "https://gotoshout.com/thank-you/";
         const stepIntroContent = {
             "dance-floors": {
                 title: "Dance Floor Estimate",
-                intro:
-                    'These items include dance floor wraps. You can <a href="https://gotoshout.com/dance-floors/dance-floor-wraps/" target="_blank">Click Here</a> to see samples of our dance floor work.',
+                intro: 'These items include dance floor wraps. You can <a href="https://gotoshout.com/dance-floors/dance-floor-wraps/" target="_blank">Click Here</a> to see samples of our dance floor work.',
             },
             aisles: {
                 title: "Aisle Estimate",
-                intro:
-                    'These items include printed wraps, aisle runners, and acrylic aisles. You can <a href="https://gotoshout.com/aisles/aisle-wraps-and-runners/" target="_blank">Click Here</a> to see samples of our aisle work.',
+                intro: 'These items include printed wraps, aisle runners, and acrylic aisles. You can <a href="https://gotoshout.com/aisles/aisle-wraps-and-runners/" target="_blank">Click Here</a> to see samples of our aisle work.',
             },
             "breathtaking-enhancements": {
                 title: "Breathtaking Enhancements Estimate",
-                intro:
-                    'These items include standalone prints, printed walls, pop-up backdrops, fabric pillowcase backdrops, and photobooths. You can <a href="https://gotoshout.com/breathtaking-enhancements/" target="_blank">Click Here</a> to see samples of our aisle work.',
+                intro: 'These items include standalone prints, printed walls, pop-up backdrops, fabric pillowcase backdrops, and photobooths. You can <a href="https://gotoshout.com/breathtaking-enhancements/" target="_blank">Click Here</a> to see samples of our aisle work.',
             },
             "specialized-touches": {
                 title: "Specialized Touches Estimate",
-                intro:
-                    'These items include wraps, decals, and clings. You can <a href="https://gotoshout.com/specialized-touches/" target="_blank">Click Here</a> to see samples of our aisle work.',
+                intro: 'These items include wraps, decals, and clings. You can <a href="https://gotoshout.com/specialized-touches/" target="_blank">Click Here</a> to see samples of our aisle work.',
             },
             "individualized-accents": {
                 title: "Individualized Accents Estimate",
-                intro:
-                    'These items include prints, menus, invitations, signage, etc. You can <a href="https://gotoshout.com/individualized-accents/" target="_blank">Click Here</a> to see samples of our aisle work.',
+                intro: 'These items include prints, menus, invitations, signage, etc. You can <a href="https://gotoshout.com/individualized-accents/" target="_blank">Click Here</a> to see samples of our aisle work.',
             },
         };
 
@@ -699,9 +948,7 @@
                 ? fieldWrap.querySelector("label")
                 : null;
 
-            return label
-                ? label.textContent.trim()
-                : "This field";
+            return label ? label.textContent.trim() : "This field";
         }
 
         function getRequiredMessage(field) {
@@ -767,6 +1014,124 @@
             }
         }
 
+        function getDimensionFields(group) {
+            return {
+                values: Array.from(
+                    group.querySelectorAll("[data-dimension-value]"),
+                ),
+                unit: group.querySelector("[data-dimension-unit]"),
+                output: group.querySelector(
+                    "[data-dimension-output]",
+                ),
+            };
+        }
+
+        function formatDimension(value) {
+            return String(Math.round(value * 100) / 100);
+        }
+
+        function syncDimensionOutput(group) {
+            const fields = getDimensionFields(group);
+            const width = Number(fields.values[0].value);
+            const height = Number(fields.values[1].value);
+
+            if (
+                fields.values[0].value !== "" &&
+                fields.values[1].value !== "" &&
+                Number.isFinite(width) &&
+                Number.isFinite(height) &&
+                width > 0 &&
+                height > 0
+            ) {
+                fields.output.value =
+                    formatDimension(width) +
+                    " x " +
+                    formatDimension(height) +
+                    " " +
+                    fields.unit.value;
+            } else {
+                fields.output.value = "";
+            }
+        }
+
+        function clearDimensionError(group) {
+            const fields = getDimensionFields(group);
+            const errorId = fields.output.name + "Error";
+            const message = document.getElementById(errorId);
+
+            fields.values.forEach((field) => {
+                field.classList.remove("dfw-error");
+                field.removeAttribute("aria-invalid");
+                field.removeAttribute("aria-describedby");
+            });
+
+            if (message) {
+                message.remove();
+            }
+        }
+
+        function setDimensionError(group, messageText) {
+            const fields = getDimensionFields(group);
+            const errorId = fields.output.name + "Error";
+            let message = document.getElementById(errorId);
+
+            fields.values.forEach((field) => {
+                field.classList.add("dfw-error");
+                field.setAttribute("aria-invalid", "true");
+                field.setAttribute("aria-describedby", errorId);
+            });
+
+            if (!message) {
+                message = document.createElement("p");
+                message.id = errorId;
+                message.className = "dfw-field-error";
+                message.setAttribute("role", "alert");
+                group.appendChild(message);
+            }
+
+            message.textContent = messageText;
+        }
+
+        function validateDimensionGroup(group) {
+            const fields = getDimensionFields(group);
+            const hasWidth = fields.values[0].value !== "";
+            const hasHeight = fields.values[1].value !== "";
+
+            if (!hasWidth && !hasHeight) {
+                clearDimensionError(group);
+                syncDimensionOutput(group);
+                return true;
+            }
+
+            if (!hasWidth || !hasHeight) {
+                setDimensionError(
+                    group,
+                    "Please enter both width and height.",
+                );
+                syncDimensionOutput(group);
+                return false;
+            }
+
+            if (
+                fields.values.some(
+                    (field) =>
+                        !Number.isFinite(Number(field.value)) ||
+                        Number(field.value) <= 0,
+                )
+            ) {
+                setDimensionError(
+                    group,
+                    "Width and height must be positive numbers.",
+                );
+                syncDimensionOutput(group);
+                return false;
+            }
+
+            clearDimensionError(group);
+            syncDimensionOutput(group);
+            return true;
+        }
+
         function validatePanel(panel) {
             const requiredFields =
                 panel.querySelectorAll("[required]");
@@ -780,6 +1145,14 @@
                     clearFieldError(field);
                 }
             });
+
+            panel
+                .querySelectorAll("[data-dimension-group]")
+                .forEach((group) => {
+                    if (!validateDimensionGroup(group)) {
+                        valid = false;
+                    }
+                });
 
             return valid;
         }
@@ -966,6 +1339,53 @@
                 });
             });
 
+        dimensionGroups.forEach((group) => {
+            const fields = getDimensionFields(group);
+            fields.unit.dataset.previousUnit = fields.unit.value;
+
+            fields.values.forEach((field) => {
+                field.addEventListener("input", function () {
+                    syncDimensionOutput(group);
+
+                    if (
+                        fields.values.every(
+                            (valueField) =>
+                                valueField.value !== "" &&
+                                Number(valueField.value) > 0,
+                        )
+                    ) {
+                        clearDimensionError(group);
+                    }
+                });
+            });
+
+            fields.unit.addEventListener("change", function () {
+                const previousUnit = fields.unit.dataset.previousUnit;
+                const nextUnit = fields.unit.value;
+
+                if (previousUnit !== nextUnit) {
+                    fields.values.forEach((field) => {
+                        if (field.value === "") return;
+
+                        const value = Number(field.value);
+                        if (!Number.isFinite(value) || value <= 0)
+                            return;
+
+                        field.value = formatDimension(
+                            previousUnit === "inches"
+                                ? value / 12
+                                : value * 12,
+                        );
+                    });
+                }
+
+                fields.unit.dataset.previousUnit = nextUnit;
+                syncDimensionOutput(group);
+            });
+
+            syncDimensionOutput(group);
+        });
+
         form.querySelectorAll("[required]").forEach((field) => {
             field.addEventListener("input", function () {
                 if (isRequiredFieldValid(field)) {
@@ -984,6 +1404,7 @@
             event.preventDefault();
 
             refreshVisibleSteps();
+            dimensionGroups.forEach(syncDimensionOutput);
 
             if (
                 !validateVisiblePanels(
