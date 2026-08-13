@@ -249,7 +249,7 @@ class GHL_Elementor_Form_Action extends \ElementorPro\Modules\Forms\Classes\Acti
             $settings['redirect_url'] = self::SHOUT_DASHBOARD_URL;
         }
 
-        $this->add_redirect_response($settings, $contact_id, $opportunity_id, $ajax_handler);
+        $this->add_redirect_response($settings, $contact_id, $opportunity_id, $ajax_handler, $fields);
     }
 
     /**
@@ -673,18 +673,26 @@ class GHL_Elementor_Form_Action extends \ElementorPro\Modules\Forms\Classes\Acti
      * @param string $contact_id Contact ID.
      * @param string $opportunity_id Opportunity ID.
      * @param object $ajax_handler Elementor AJAX handler.
+     * @param array  $fields Submitted fields.
      */
-    private function add_redirect_response(array $settings, $contact_id, $opportunity_id, $ajax_handler)
+    private function add_redirect_response(array $settings, $contact_id, $opportunity_id, $ajax_handler, $fields = [])
     {
         if (empty($settings['redirect_url'])) {
             return;
         }
 
+        $query_args = [
+            'contact_id' => $contact_id,
+            'opportunity_id' => $opportunity_id,
+        ];
+        $role = trim((string) ($fields['role'] ?? ''));
+
+        if ($role !== '') {
+            $query_args['role'] = $role;
+        }
+
         $redirect_url = add_query_arg(
-            [
-                'contact_id' => $contact_id,
-                'opportunity_id' => $opportunity_id,
-            ],
+            $query_args,
             $settings['redirect_url']
         );
 
