@@ -132,7 +132,7 @@ class GHL_Progressive_Form_Controller
     }
 
     /**
-     * Save progressive custom HTML widget values to GHL contact and opportunity custom fields.
+     * Save progressive custom HTML widget values to GHL opportunity custom fields.
      *
      * @param \WP_REST_Request $request REST request.
      * @return \WP_REST_Response|\WP_Error
@@ -175,19 +175,22 @@ class GHL_Progressive_Form_Controller
 
         unset($fields['contact_id'], $fields['opportunity_id']);
 
+        if (trim((string) ($fields['items'] ?? '')) === '') {
+            return new \WP_Error(
+                'ghl_progressive_missing_items',
+                'At least one complete event item is required.',
+                ['status' => 400]
+            );
+        }
+
         $api_client = new GHL_API_Client($settings['token'], $this->logger);
         $field_mapper = new GHL_Field_Mapper();
-        $contact_custom_fields = $field_mapper->build_progressive_html_contact_custom_fields(
-            $fields,
-            $api_client,
-            $settings['location_id']
-        );
         $opportunity_custom_fields = $field_mapper->build_progressive_html_opportunity_custom_fields(
             $fields,
             $api_client,
             $settings['location_id']
         );
-        $custom_fields = array_merge($contact_custom_fields, $opportunity_custom_fields);
+        $custom_fields = $opportunity_custom_fields;
 
         if (empty($custom_fields)) {
             $this->logger->info('Progressive submission had no custom fields to update.', [
@@ -206,43 +209,20 @@ class GHL_Progressive_Form_Controller
         $this->logger->info('Progressive submission fields mapped.', [
             'contact_id' => $contact_id,
             'opportunity_id' => $opportunity_id,
-            'contact_fields' => array_values(array_map([$this, 'get_custom_field_key'], $contact_custom_fields)),
             'opportunity_fields' => array_values(array_map([$this, 'get_custom_field_key'], $opportunity_custom_fields)),
             'file_fields' => $this->get_file_field_keys($fields),
         ]);
 
-        if (!empty($contact_custom_fields)) {
-            $contact_field_groups = $this->split_custom_fields_by_upload_type(
-                $contact_custom_fields,
-                GHL_Field_Mapper::PROGRESSIVE_HTML_CONTACT_FIELDS
-            );
-            $contact_response = $this->update_contact_custom_fields(
-                $api_client,
-                $contact_id,
-                $contact_field_groups['standard'],
-                $contact_field_groups['file']
-            );
-
-            if (is_wp_error($contact_response)) {
-                $this->logger->error('Progressive contact custom field update failed.', [
-                    'contact_id' => $contact_id,
-                    'error' => $contact_response->get_error_message(),
-                ]);
-
-                return new \WP_Error(
-                    'ghl_progressive_update_failed',
-                    'GHL contact could not be updated.',
-                    ['status' => 502]
-                );
-            }
-        }
-
         if (!empty($opportunity_custom_fields)) {
+            $opportunity_field_groups = $this->split_custom_fields_by_upload_type(
+                $opportunity_custom_fields,
+                GHL_Field_Mapper::PROGRESSIVE_HTML_OPPORTUNITY_FIELDS
+            );
             $opportunity_response = $this->update_opportunity_custom_fields(
                 $api_client,
                 $opportunity_id,
-                $opportunity_custom_fields,
-                []
+                $opportunity_field_groups['standard'],
+                $opportunity_field_groups['file']
             );
 
             if (is_wp_error($opportunity_response)) {
@@ -346,7 +326,9 @@ class GHL_Progressive_Form_Controller
                 $value = implode(', ', array_map('sanitize_text_field', $value));
             }
 
-            $fields[$key] = sanitize_text_field((string) $value);
+            $fields[$key] = $key === 'items' || substr($key, -6) === '_notes'
+                ? sanitize_textarea_field((string) $value)
+                : sanitize_text_field((string) $value);
         }
 
         foreach ($request->get_file_params() as $key => $file) {
@@ -556,56 +538,6 @@ class GHL_Progressive_Form_Controller
         }
 
         return $groups;
-    }
-
-    /**
-     * Update contact custom fields, resetting uploaded file fields before replacement.
-     *
-     * @param GHL_API_Client $api_client API client.
-     * @param string         $contact_id Contact ID.
-     * @param array          $standard_custom_fields Non-file custom fields.
-     * @param array          $file_custom_fields Uploaded file custom fields.
-     * @return array|\WP_Error
-     */
-    private function update_contact_custom_fields(
-        GHL_API_Client $api_client,
-        $contact_id,
-        array $standard_custom_fields,
-        array $file_custom_fields
-    ) {
-        $response = [];
-
-        if (!empty($standard_custom_fields)) {
-            $response = $api_client->update_contact($contact_id, [
-                'customFields' => $standard_custom_fields,
-            ]);
-
-            if (is_wp_error($response)) {
-                return $response;
-            }
-        }
-
-        if (empty($file_custom_fields)) {
-            return $response;
-        }
-
-        $clear_response = $api_client->update_contact($contact_id, [
-            'customFields' => $this->build_file_custom_field_clear_payload($file_custom_fields),
-        ]);
-
-        if (is_wp_error($clear_response)) {
-            $this->logger->error('Progressive contact file field reset failed before upload update.', [
-                'contact_id' => $contact_id,
-                'file_fields' => array_values(array_map([$this, 'get_custom_field_key'], $file_custom_fields)),
-                'error' => $clear_response->get_error_message(),
-            ]);
-
-            return $clear_response;
-        }
-
-        return $api_client->update_contact($contact_id, [
-            'customFields' => $file_custom_fields,
-        ]);
     }
 
     /**

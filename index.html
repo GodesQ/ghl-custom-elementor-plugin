@@ -1,3 +1,82 @@
+<style>
+    .dfw-estimate-form-section .dfw-dimensions[data-dimension-group] {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 14px !important;
+        align-items: stretch !important;
+        width: 100% !important;
+    }
+
+    .dfw-estimate-form-section .dfw-dimension-row[data-dimension-row] {
+        display: grid !important;
+        grid-template-columns: minmax(90px, 0.8fr) minmax(150px, 1fr) repeat(
+                2,
+                minmax(110px, 1fr)
+            ) auto;
+        gap: 12px;
+        align-items: end;
+        width: 100% !important;
+    }
+
+    .dfw-estimate-form-section .dfw-dimension-row .dfw-field {
+        margin: 0;
+        min-width: 0;
+        width: 100%;
+    }
+
+    .dfw-estimate-form-section .dfw-dimension-row label {
+        display: block;
+        line-height: 1.2;
+        margin: 0 0 6px;
+    }
+
+    .dfw-estimate-form-section .dfw-dimension-row input,
+    .dfw-estimate-form-section .dfw-dimension-row select {
+        box-sizing: border-box;
+        width: 100%;
+    }
+
+    .dfw-estimate-form-section .dfw-dimension-remove,
+    .dfw-estimate-form-section .dfw-dimension-add {
+        height: auto !important;
+        line-height: 1.2 !important;
+        min-height: 42px;
+        min-width: 0 !important;
+        padding: 10px 16px !important;
+        white-space: nowrap;
+        width: auto !important;
+        background: #fff !important;
+        border: 1px solid currentColor !important;
+        box-shadow: none !important;
+        color: #cf2f6b !important;
+    }
+
+    .dfw-estimate-form-section .dfw-dimension-remove {
+        align-self: end;
+    }
+
+    .dfw-estimate-form-section .dfw-dimension-add {
+        align-self: flex-start;
+        justify-self: start;
+    }
+
+    .dfw-estimate-form-section .dfw-dimension-row .dfw-field-error {
+        grid-column: 1 / -1;
+        margin: 0;
+    }
+
+    @media (max-width: 767px) {
+        .dfw-estimate-form-section .dfw-dimension-row[data-dimension-row] {
+            grid-template-columns: 1fr !important;
+        }
+
+        .dfw-estimate-form-section .dfw-dimension-remove,
+        .dfw-estimate-form-section .dfw-dimension-add {
+            width: 100% !important;
+        }
+    }
+</style>
+
 <section class="dfw-estimate-form-section" data-ghl-progressive-form>
     <div class="dfw-form-wrap">
         <h2>Dance Floor Estimate</h2>
@@ -69,6 +148,7 @@
         >
             <input type="hidden" name="contact_id" />
             <input type="hidden" name="opportunity_id" />
+            <textarea name="items" data-items-output hidden></textarea>
 
             <!-- STEP 1 -->
             <div
@@ -78,13 +158,20 @@
             >
                 <h3>Dance Floor Wraps</h3>
 
-                <div class="dfw-dimensions" data-dimension-group>
+                <div
+                    class="dfw-dimensions"
+                    data-dimension-group
+                    data-item-label="Dance Floor Wraps"
+                >
                     <div class="dfw-field dfw-quantity-field">
                         <label for="floorQuantity">Quantity</label>
                         <input
                             id="floorQuantity"
                             name="floor_quantity"
-                            type="text"
+                            type="number"
+                            min="1"
+                            step="1"
+                            inputmode="numeric"
                         />
                     </div>
                     <div class="dfw-field">
@@ -116,9 +203,7 @@
                     </div>
 
                     <div class="dfw-field">
-                        <label for="floorHeight"
-                            >Length / Height</label
-                        >
+                        <label for="floorHeight">Length</label>
                         <input
                             id="floorHeight"
                             name="floor_height"
@@ -129,11 +214,6 @@
                             data-dimension-value
                         />
                     </div>
-                    <input
-                        type="hidden"
-                        name="floor_size"
-                        data-dimension-output
-                    />
                 </div>
 
                 <h4>Dance Floor Inspiration Photos</h4>
@@ -209,13 +289,20 @@
             >
                 <h3>Aisles</h3>
 
-                <div class="dfw-dimensions" data-dimension-group>
+                <div
+                    class="dfw-dimensions"
+                    data-dimension-group
+                    data-item-label="Aisle"
+                >
                     <div class="dfw-field dfw-quantity-field">
                         <label for="aisleQuantity">Quantity</label>
                         <input
                             id="aisleQuantity"
                             name="aisle_quantity"
-                            type="text"
+                            type="number"
+                            min="1"
+                            step="1"
+                            inputmode="numeric"
                         />
                     </div>
                     <div class="dfw-field">
@@ -246,9 +333,7 @@
                         />
                     </div>
                     <div class="dfw-field">
-                        <label for="aisleHeight"
-                            >Length / Height</label
-                        >
+                        <label for="aisleHeight">Length</label>
                         <input
                             id="aisleHeight"
                             name="aisle_height"
@@ -259,11 +344,6 @@
                             data-dimension-value
                         />
                     </div>
-                    <input
-                        type="hidden"
-                        name="aisle_size"
-                        data-dimension-output
-                    />
                 </div>
 
                 <h4>Aisle Inspiration Photos</h4>
@@ -327,7 +407,11 @@
             >
                 <h3>Breathtaking Enhancements</h3>
 
-                <div class="dfw-dimensions" data-dimension-group>
+                <div
+                    class="dfw-dimensions"
+                    data-dimension-group
+                    data-item-label="Breathtaking Enhancements"
+                >
                     <div class="dfw-field dfw-quantity-field">
                         <label for="enhancementQuantity"
                             >Quantity</label
@@ -335,7 +419,10 @@
                         <input
                             id="enhancementQuantity"
                             name="enhancement_quantity"
-                            type="text"
+                            type="number"
+                            min="1"
+                            step="1"
+                            inputmode="numeric"
                         />
                     </div>
                     <div class="dfw-field">
@@ -366,9 +453,7 @@
                         />
                     </div>
                     <div class="dfw-field">
-                        <label for="enhancementHeight"
-                            >Length / Height</label
-                        >
+                        <label for="enhancementHeight">Length</label>
                         <input
                             id="enhancementHeight"
                             name="enhancement_height"
@@ -379,11 +464,6 @@
                             data-dimension-value
                         />
                     </div>
-                    <input
-                        type="hidden"
-                        name="enhancement_type"
-                        data-dimension-output
-                    />
                 </div>
 
                 <h4>Enhancement Inspiration Photos</h4>
@@ -449,7 +529,11 @@
             >
                 <h3>Specialized Touches</h3>
 
-                <div class="dfw-dimensions" data-dimension-group>
+                <div
+                    class="dfw-dimensions"
+                    data-dimension-group
+                    data-item-label="Specialized Touches"
+                >
                     <div class="dfw-field dfw-quantity-field">
                         <label for="specializedQuantity"
                             >Quantity</label
@@ -457,7 +541,10 @@
                         <input
                             id="specializedQuantity"
                             name="specialized_quantity"
-                            type="text"
+                            type="number"
+                            min="1"
+                            step="1"
+                            inputmode="numeric"
                         />
                     </div>
                     <div class="dfw-field">
@@ -488,9 +575,7 @@
                         />
                     </div>
                     <div class="dfw-field">
-                        <label for="specializedHeight"
-                            >Length / Height</label
-                        >
+                        <label for="specializedHeight">Length</label>
                         <input
                             id="specializedHeight"
                             name="specialized_height"
@@ -501,11 +586,6 @@
                             data-dimension-value
                         />
                     </div>
-                    <input
-                        type="hidden"
-                        name="specialized_details"
-                        data-dimension-output
-                    />
                 </div>
 
                 <h4>Specialized Touch Inspiration Photos</h4>
@@ -570,13 +650,20 @@
             >
                 <h3>Individualized Accents</h3>
 
-                <div class="dfw-dimensions" data-dimension-group>
+                <div
+                    class="dfw-dimensions"
+                    data-dimension-group
+                    data-item-label="Individualized Accents"
+                >
                     <div class="dfw-field dfw-quantity-field">
                         <label for="accentQuantity">Quantity</label>
                         <input
                             id="accentQuantity"
                             name="accent_quantity"
-                            type="text"
+                            type="number"
+                            min="1"
+                            step="1"
+                            inputmode="numeric"
                         />
                     </div>
                     <div class="dfw-field">
@@ -607,9 +694,7 @@
                         />
                     </div>
                     <div class="dfw-field">
-                        <label for="accentHeight"
-                            >Length / Height</label
-                        >
+                        <label for="accentHeight">Length</label>
                         <input
                             id="accentHeight"
                             name="accent_height"
@@ -620,11 +705,6 @@
                             data-dimension-value
                         />
                     </div>
-                    <input
-                        type="hidden"
-                        name="accent_details"
-                        data-dimension-output
-                    />
                 </div>
 
                 <h4>Accent Inspiration Photos</h4>
@@ -933,15 +1013,21 @@
             }
         }
 
-        function getDimensionFields(group) {
+        function getDimensionRows(group) {
+            return Array.from(
+                group.querySelectorAll("[data-dimension-row]"),
+            );
+        }
+
+        function getDimensionRowFields(row) {
             return {
+                quantity:
+                    row.querySelector("[data-dimension-quantity]") ||
+                    row.querySelector(".dfw-quantity-field input"),
                 values: Array.from(
-                    group.querySelectorAll("[data-dimension-value]"),
+                    row.querySelectorAll("[data-dimension-value]"),
                 ),
-                unit: group.querySelector("[data-dimension-unit]"),
-                output: group.querySelector(
-                    "[data-dimension-output]",
-                ),
+                unit: row.querySelector("[data-dimension-unit]"),
             };
         }
 
@@ -949,36 +1035,118 @@
             return String(Math.round(value * 100) / 100);
         }
 
-        function syncDimensionOutput(group) {
-            const fields = getDimensionFields(group);
-            const width = Number(fields.values[0].value);
-            const height = Number(fields.values[1].value);
+        function getDimensionRowData(row) {
+            const fields = getDimensionRowFields(row);
+            const widthField = fields.values[0];
+            const lengthField = fields.values[1];
+            const quantity = fields.quantity
+                ? fields.quantity.value.trim()
+                : "";
+            const widthValue = widthField ? widthField.value.trim() : "";
+            const lengthValue = lengthField
+                ? lengthField.value.trim()
+                : "";
+            const quantityValue = Number(quantity);
+            const width = Number(widthValue);
+            const length = Number(lengthValue);
 
-            if (
-                fields.values[0].value !== "" &&
-                fields.values[1].value !== "" &&
-                Number.isFinite(width) &&
-                Number.isFinite(height) &&
-                width > 0 &&
-                height > 0
-            ) {
-                fields.output.value =
-                    formatDimension(width) +
-                    " x " +
-                    formatDimension(height) +
-                    " " +
-                    fields.unit.value;
-            } else {
-                fields.output.value = "";
-            }
+            return {
+                fields,
+                quantity,
+                quantityValue,
+                width,
+                length,
+                hasWidth: widthValue !== "",
+                hasLength: lengthValue !== "",
+                hasAnyValue:
+                    quantity !== "" ||
+                    widthValue !== "" ||
+                    lengthValue !== "",
+                hasValidSize:
+                    widthValue !== "" &&
+                    lengthValue !== "" &&
+                    Number.isFinite(width) &&
+                    Number.isFinite(length) &&
+                    width > 0 &&
+                    length > 0,
+                hasValidQuantity:
+                    quantity !== "" &&
+                    Number.isInteger(quantityValue) &&
+                    quantityValue >= 1,
+                unit: fields.unit ? fields.unit.value : "",
+            };
         }
 
-        function clearDimensionError(group) {
-            const fields = getDimensionFields(group);
-            const errorId = fields.output.name + "Error";
-            const message = document.getElementById(errorId);
+        function isCompleteItem(rowData) {
+            return rowData.hasValidQuantity && rowData.hasValidSize;
+        }
 
-            fields.values.forEach((field) => {
+        function formatItem(group, rowData, index) {
+            const unit =
+                rowData.unit === "feet" ? "Feet" : "Inches";
+
+            return (
+                (index + 1) +
+                ". " +
+                group.dataset.itemLabel +
+                ": " +
+                formatDimension(rowData.width) +
+                " (width) × " +
+                formatDimension(rowData.length) +
+                " (length/height) " +
+                unit +
+                " (" +
+                rowData.quantityValue +
+                "x)"
+            );
+        }
+
+        function getCompleteItems() {
+            const items = [];
+
+            dimensionGroups.forEach((group) => {
+                const panel = group.closest(".dfw-panel");
+
+                if (panel && !isVisibleElement(panel)) return;
+
+                getDimensionRows(group)
+                    .map(getDimensionRowData)
+                    .filter(isCompleteItem)
+                    .forEach((rowData) => {
+                        items.push({ group, rowData });
+                    });
+            });
+
+            return items;
+        }
+
+        function syncItemsOutput() {
+            const items = getCompleteItems();
+            const output = form.querySelector("[data-items-output]");
+            const formattedItems = items
+                .map((item, index) =>
+                    formatItem(item.group, item.rowData, index),
+                )
+                .join("\n");
+
+            if (output) {
+                output.value = formattedItems;
+            }
+
+            return items;
+        }
+
+        function clearDimensionRowError(row) {
+            const group = row.closest("[data-dimension-group]");
+            const fields = getDimensionRowFields(row);
+            const errorId =
+                row.getAttribute("data-dimension-error-id") || "";
+            const message = errorId
+                ? document.getElementById(errorId)
+                : null;
+
+            [fields.quantity].concat(fields.values).forEach((field) => {
+                if (!field) return;
                 field.classList.remove("dfw-error");
                 field.removeAttribute("aria-invalid");
                 field.removeAttribute("aria-describedby");
@@ -987,14 +1155,22 @@
             if (message) {
                 message.remove();
             }
+            if (group) syncItemsOutput();
         }
 
-        function setDimensionError(group, messageText) {
-            const fields = getDimensionFields(group);
-            const errorId = fields.output.name + "Error";
+        function setDimensionRowError(row, messageText) {
+            const fields = getDimensionRowFields(row);
+            const errorId =
+                row.getAttribute("data-dimension-error-id") ||
+                "dimensionRow" +
+                    Math.random().toString(36).slice(2, 10) +
+                    "Error";
             let message = document.getElementById(errorId);
 
-            fields.values.forEach((field) => {
+            row.setAttribute("data-dimension-error-id", errorId);
+
+            [fields.quantity].concat(fields.values).forEach((field) => {
+                if (!field) return;
                 field.classList.add("dfw-error");
                 field.setAttribute("aria-invalid", "true");
                 field.setAttribute("aria-describedby", errorId);
@@ -1005,50 +1181,78 @@
                 message.id = errorId;
                 message.className = "dfw-field-error";
                 message.setAttribute("role", "alert");
-                group.appendChild(message);
+                row.appendChild(message);
             }
 
             message.textContent = messageText;
         }
 
         function validateDimensionGroup(group) {
-            const fields = getDimensionFields(group);
-            const hasWidth = fields.values[0].value !== "";
-            const hasHeight = fields.values[1].value !== "";
+            let valid = true;
 
-            if (!hasWidth && !hasHeight) {
-                clearDimensionError(group);
-                syncDimensionOutput(group);
-                return true;
-            }
+            getDimensionRows(group).forEach((row) => {
+                const rowData = getDimensionRowData(row);
 
-            if (!hasWidth || !hasHeight) {
-                setDimensionError(
-                    group,
-                    "Please enter both width and height.",
-                );
-                syncDimensionOutput(group);
-                return false;
-            }
+                if (!rowData.hasAnyValue) {
+                    clearDimensionRowError(row);
+                    return;
+                }
 
-            if (
-                fields.values.some(
-                    (field) =>
-                        !Number.isFinite(Number(field.value)) ||
-                        Number(field.value) <= 0,
-                )
-            ) {
-                setDimensionError(
-                    group,
-                    "Width and height must be positive numbers.",
-                );
-                syncDimensionOutput(group);
-                return false;
-            }
+                if (
+                    rowData.quantity === "" ||
+                    !rowData.hasWidth ||
+                    !rowData.hasLength
+                ) {
+                    valid = false;
+                    setDimensionRowError(
+                        row,
+                        "Please enter quantity, width, and length.",
+                    );
+                    return;
+                }
 
-            clearDimensionError(group);
-            syncDimensionOutput(group);
-            return true;
+                if (!rowData.hasValidQuantity) {
+                    valid = false;
+                    setDimensionRowError(
+                        row,
+                        "Quantity must be a positive whole number.",
+                    );
+                    return;
+                }
+
+                if (!rowData.hasValidSize) {
+                    valid = false;
+                    setDimensionRowError(
+                        row,
+                        "Width and length must be positive numbers.",
+                    );
+                    return;
+                }
+
+                clearDimensionRowError(row);
+            });
+
+            syncItemsOutput();
+            return valid;
+        }
+
+        function validateAtLeastOneItem() {
+            if (syncItemsOutput().length > 0) return true;
+
+            const firstPanel = visiblePanels[0];
+            const firstQuantity = firstPanel
+                ? firstPanel.querySelector("[data-dimension-quantity]")
+                : null;
+
+            showStep(0);
+            setStatus(
+                "Please add at least one item with quantity, width, and length.",
+                "error",
+            );
+
+            if (firstQuantity) firstQuantity.focus();
+
+            return false;
         }
 
         function validatePanel(panel) {
@@ -1204,6 +1408,276 @@
             }
         }
 
+        function setDimensionRowIds(row, groupIndex, rowIndex) {
+            row.querySelectorAll(".dfw-field").forEach(
+                (fieldWrap, fieldIndex) => {
+                    const field = fieldWrap.querySelector(
+                        "input, select",
+                    );
+                    const label = fieldWrap.querySelector("label");
+
+                    if (!field || field.type === "hidden") return;
+
+                    const id =
+                        "dfwDimension" +
+                        groupIndex +
+                        "_" +
+                        rowIndex +
+                        "_" +
+                        fieldIndex;
+
+                    field.id = id;
+
+                    if (label) {
+                        label.setAttribute("for", id);
+                    }
+                },
+            );
+        }
+
+        function removeDimensionFieldNames(row) {
+            const fields = getDimensionRowFields(row);
+            const controls = [fields.quantity, fields.unit].concat(
+                fields.values,
+            );
+
+            controls.forEach((field) => {
+                if (!field) return;
+                field.removeAttribute("name");
+            });
+        }
+
+        function buildInitialDimensionRow(group) {
+            const fieldNodes = Array.from(group.children).filter(
+                (child) =>
+                    child.classList &&
+                    child.classList.contains("dfw-field"),
+            );
+            const row = document.createElement("div");
+            const firstField = fieldNodes[0] || group.firstChild;
+
+            row.className = "dfw-dimension-row";
+            row.setAttribute("data-dimension-row", "");
+            group.insertBefore(row, firstField);
+
+            fieldNodes.forEach((fieldNode) => {
+                row.appendChild(fieldNode);
+            });
+
+            return row;
+        }
+
+        function ensureDimensionRemoveButton(row) {
+            let removeButton = row.querySelector(
+                "[data-dimension-remove]",
+            );
+
+            if (removeButton) {
+                return removeButton;
+            }
+
+            removeButton = document.createElement("button");
+            removeButton.type = "button";
+            removeButton.className =
+                "dfw-btn dfw-btn-secondary dfw-dimension-remove";
+            removeButton.setAttribute("data-dimension-remove", "");
+            removeButton.textContent = "Remove";
+            row.appendChild(removeButton);
+
+            return removeButton;
+        }
+
+        function ensureDimensionAddButton(group) {
+            let addButton = group.querySelector("[data-dimension-add]");
+
+            if (addButton) {
+                return addButton;
+            }
+
+            addButton = document.createElement("button");
+            addButton.type = "button";
+            addButton.className =
+                "dfw-btn dfw-btn-secondary dfw-dimension-add";
+            addButton.setAttribute("data-dimension-add", "");
+            addButton.textContent = "Add another size";
+            group.appendChild(addButton);
+
+            return addButton;
+        }
+
+        function updateDimensionRemoveButtons(group) {
+            const rows = getDimensionRows(group);
+
+            rows.forEach((row) => {
+                const removeButton = row.querySelector(
+                    "[data-dimension-remove]",
+                );
+
+                if (!removeButton) return;
+
+                removeButton.hidden = rows.length === 1;
+                removeButton.disabled = rows.length === 1;
+            });
+        }
+
+        function clearDimensionRowValues(row) {
+            const fields = getDimensionRowFields(row);
+
+            if (fields.quantity) {
+                fields.quantity.value = "";
+            }
+
+            fields.values.forEach((field) => {
+                field.value = "";
+            });
+
+            if (fields.unit) {
+                fields.unit.value = "inches";
+                fields.unit.dataset.previousUnit = fields.unit.value;
+            }
+        }
+
+        function prepareDimensionRow(row, group, groupIndex, rowIndex) {
+            const fields = getDimensionRowFields(row);
+
+            if (fields.quantity) {
+                fields.quantity.setAttribute(
+                    "data-dimension-quantity",
+                    "",
+                );
+            }
+
+            removeDimensionFieldNames(row);
+            setDimensionRowIds(row, groupIndex, rowIndex);
+            ensureDimensionRemoveButton(row);
+
+            if (fields.unit) {
+                fields.unit.dataset.previousUnit = fields.unit.value;
+            }
+
+            if (row.dataset.dimensionReady === "true") {
+                return;
+            }
+
+            fields.values.forEach((field) => {
+                field.addEventListener("input", function () {
+                    syncItemsOutput();
+
+                    if (isCompleteItem(getDimensionRowData(row))) {
+                        clearDimensionRowError(row);
+                    }
+                });
+            });
+
+            if (fields.quantity) {
+                fields.quantity.addEventListener("input", function () {
+                    syncItemsOutput();
+
+                    if (isCompleteItem(getDimensionRowData(row))) {
+                        clearDimensionRowError(row);
+                    }
+                });
+            }
+
+            if (fields.unit) {
+                fields.unit.addEventListener("change", function () {
+                    const previousUnit =
+                        fields.unit.dataset.previousUnit;
+                    const nextUnit = fields.unit.value;
+
+                    if (previousUnit !== nextUnit) {
+                        fields.values.forEach((field) => {
+                            if (field.value === "") return;
+
+                            const value = Number(field.value);
+                            if (
+                                !Number.isFinite(value) ||
+                                value <= 0
+                            )
+                                return;
+
+                            field.value = formatDimension(
+                                previousUnit === "inches"
+                                    ? value / 12
+                                    : value * 12,
+                            );
+                        });
+                    }
+
+                    fields.unit.dataset.previousUnit = nextUnit;
+                    syncItemsOutput();
+                });
+            }
+
+            row
+                .querySelector("[data-dimension-remove]")
+                .addEventListener("click", function () {
+                    row.remove();
+                    getDimensionRows(group).forEach(
+                        (dimensionRow, index) => {
+                            prepareDimensionRow(
+                                dimensionRow,
+                                group,
+                                groupIndex,
+                                index,
+                            );
+                        },
+                    );
+                    updateDimensionRemoveButtons(group);
+                    syncItemsOutput();
+                });
+
+            row.dataset.dimensionReady = "true";
+        }
+
+        function addDimensionRow(group, groupIndex) {
+            const rows = getDimensionRows(group);
+            const sourceRow = rows[0];
+            const addButton = group.querySelector(
+                "[data-dimension-add]",
+            );
+            const newRow = sourceRow.cloneNode(true);
+
+            newRow.removeAttribute("data-dimension-ready");
+            newRow.removeAttribute("data-dimension-error-id");
+            newRow
+                .querySelectorAll(".dfw-field-error")
+                .forEach((message) => message.remove());
+            clearDimensionRowValues(newRow);
+            group.insertBefore(newRow, addButton);
+
+            getDimensionRows(group).forEach((row, index) => {
+                prepareDimensionRow(row, group, groupIndex, index);
+            });
+
+            updateDimensionRemoveButtons(group);
+            syncItemsOutput();
+        }
+
+        function setupDimensionGroup(group, groupIndex) {
+            const initialRow =
+                getDimensionRows(group)[0] ||
+                buildInitialDimensionRow(group);
+
+            const addButton = ensureDimensionAddButton(group);
+
+            getDimensionRows(group).forEach((row, rowIndex) => {
+                prepareDimensionRow(
+                    row,
+                    group,
+                    groupIndex,
+                    rowIndex,
+                );
+            });
+
+            addButton.addEventListener("click", function () {
+                addDimensionRow(group, groupIndex);
+            });
+
+            updateDimensionRemoveButtons(group);
+            syncItemsOutput();
+        }
+
         nextBtn.addEventListener("click", function () {
             if (!validateCurrentStep()) return;
 
@@ -1258,52 +1732,7 @@
                 });
             });
 
-        dimensionGroups.forEach((group) => {
-            const fields = getDimensionFields(group);
-            fields.unit.dataset.previousUnit = fields.unit.value;
-
-            fields.values.forEach((field) => {
-                field.addEventListener("input", function () {
-                    syncDimensionOutput(group);
-
-                    if (
-                        fields.values.every(
-                            (valueField) =>
-                                valueField.value !== "" &&
-                                Number(valueField.value) > 0,
-                        )
-                    ) {
-                        clearDimensionError(group);
-                    }
-                });
-            });
-
-            fields.unit.addEventListener("change", function () {
-                const previousUnit = fields.unit.dataset.previousUnit;
-                const nextUnit = fields.unit.value;
-
-                if (previousUnit !== nextUnit) {
-                    fields.values.forEach((field) => {
-                        if (field.value === "") return;
-
-                        const value = Number(field.value);
-                        if (!Number.isFinite(value) || value <= 0)
-                            return;
-
-                        field.value = formatDimension(
-                            previousUnit === "inches"
-                                ? value / 12
-                                : value * 12,
-                        );
-                    });
-                }
-
-                fields.unit.dataset.previousUnit = nextUnit;
-                syncDimensionOutput(group);
-            });
-
-            syncDimensionOutput(group);
-        });
+        dimensionGroups.forEach(setupDimensionGroup);
 
         form.querySelectorAll("[required]").forEach((field) => {
             field.addEventListener("input", function () {
@@ -1323,7 +1752,7 @@
             event.preventDefault();
 
             refreshVisibleSteps();
-            dimensionGroups.forEach(syncDimensionOutput);
+            syncItemsOutput();
 
             if (
                 !validateVisiblePanels(
@@ -1334,6 +1763,8 @@
             ) {
                 return;
             }
+
+            if (!validateAtLeastOneItem()) return;
 
             syncTrackingFields();
 
