@@ -29,8 +29,11 @@ class GHL_Field_Mapper
     ];
 
     const INITIAL_OPPORTUNITY_FIELDS = [
-        'opportunity.product_of_interest' => 'interest',
-        'opportunity.event_location' => 'event_address',
+        'opportunity.lead_form_role' => 'role',
+        'opportunity.product_of_interests' => 'interest',
+        'opportunity.event_location_name' => 'event_location',
+        'opportunity.event_location_city' => 'event_city',
+        'opportunity.event_location_state' => 'event_state',
         'opportunity.event_date' => 'event_date',
     ];
 
