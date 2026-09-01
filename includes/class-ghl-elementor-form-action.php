@@ -245,10 +245,6 @@ class GHL_Elementor_Form_Action extends \ElementorPro\Modules\Forms\Classes\Acti
 
         $role = strtolower(trim((string) ($fields['role'] ?? '')));
 
-        if (in_array($role, self::SHOUT_DASHBOARD_ROLES, true)) {
-            $settings['redirect_url'] = self::SHOUT_DASHBOARD_URL;
-        }
-
         $this->add_redirect_response($settings, $contact_id, $opportunity_id, $ajax_handler, $fields);
     }
 
