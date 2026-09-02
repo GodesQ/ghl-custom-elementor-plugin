@@ -222,10 +222,10 @@ class GHL_Elementor_Form_Action extends \ElementorPro\Modules\Forms\Classes\Acti
             $opportunity_payload['customFields'] = $opportunity_custom_fields;
         }
 
-        $opportunity_response = $api_client->upsert_opportunity($opportunity_payload);
+        $opportunity_response = $api_client->create_opportunity($opportunity_payload);
 
         if (is_wp_error($opportunity_response)) {
-            $this->logger->error('Opportunity upsert failed.', ['error' => $opportunity_response->get_error_message()]);
+            $this->logger->error('Opportunity creation failed.', ['error' => $opportunity_response->get_error_message()]);
             $ajax_handler->add_error_message('Contact saved, but opportunity could not be saved.');
             return;
         }
@@ -238,7 +238,7 @@ class GHL_Elementor_Form_Action extends \ElementorPro\Modules\Forms\Classes\Acti
             return;
         }
 
-        $this->logger->info('Contact and opportunity upserted.', [
+        $this->logger->info('Contact upserted and opportunity created.', [
             'contact_id' => $contact_id,
             'opportunity_id' => $opportunity_id,
         ]);
