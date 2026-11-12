@@ -155,6 +155,48 @@
         return endpoint + separator + 'contact_id=' + encodeURIComponent(contactId);
     }
 
+    function showProgressiveReturnButton(form, response) {
+        var rawUrl = response && response.data && response.data.progressive_form_url;
+        var url;
+        var container;
+        var link;
+
+        if (!form || !rawUrl) {
+            return;
+        }
+
+        try {
+            url = new URL(rawUrl, window.location.href);
+        } catch (error) {
+            return;
+        }
+
+        if (url.protocol !== 'https:' && url.protocol !== 'http:') {
+            return;
+        }
+
+        container = form.nextElementSibling;
+        if (!container || !container.classList.contains('ghl-progressive-return')) {
+            container = document.createElement('div');
+            container.className = 'ghl-progressive-return';
+            container.style.marginTop = '1.5rem';
+            form.insertAdjacentElement('afterend', container);
+        }
+
+        container.textContent = '';
+        link = document.createElement('a');
+        link.className = 'elementor-button elementor-size-sm';
+        link.href = url.href;
+        link.textContent = 'Continue to your product details';
+        container.appendChild(link);
+    }
+
+    if (window.jQuery) {
+        window.jQuery(document).on('submit_success', 'form.elementor-form', function (event, response) {
+            showProgressiveReturnButton(event.currentTarget, response);
+        });
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
         var contactId = getQueryParam('contact_id');
         var opportunityId = getQueryParam('opportunity_id');

@@ -99,6 +99,17 @@ class GHL_Elementor_Form_Action extends \ElementorPro\Modules\Forms\Classes\Acti
             ]
         );
 
+        $widget->add_control(
+            'ghl_progressive_form_url',
+            [
+                'label' => esc_html__('Progressive Form URL After Appointment', self::TEXT_DOMAIN),
+                'description' => esc_html__('After a successful appointment, show a button back to this page with the contact and opportunity IDs.', self::TEXT_DOMAIN),
+                'type' => \Elementor\Controls_Manager::URL,
+                'label_block' => true,
+                'placeholder' => 'https://gotoshout.com/lead-progressive-form-sample',
+            ]
+        );
+
         $widget->end_controls_section();
     }
 
@@ -334,6 +345,12 @@ class GHL_Elementor_Form_Action extends \ElementorPro\Modules\Forms\Classes\Acti
             return;
         }
 
+        if ($settings['progressive_form_url'] !== '' && $opportunity_id === '') {
+            $this->logger->error('Scheduled appointment return link missing opportunity ID.');
+            $ajax_handler->add_error_message('Opportunity ID is required to return to the progressive form.');
+            return;
+        }
+
         $api_client = $this->make_api_client($settings);
         $contact_response = $api_client->get_contact($contact_id);
 
@@ -399,6 +416,18 @@ class GHL_Elementor_Form_Action extends \ElementorPro\Modules\Forms\Classes\Acti
         ]);
 
         $this->add_scheduled_contact_tag($api_client, $contact_id);
+
+        if ($settings['progressive_form_url'] !== '' && $opportunity_id !== '') {
+            $progressive_form_url = add_query_arg(
+                [
+                    'contact_id' => $contact_id,
+                    'opportunity_id' => $opportunity_id,
+                ],
+                $settings['progressive_form_url']
+            );
+            $ajax_handler->add_response_data('progressive_form_url', esc_url_raw($progressive_form_url));
+            return;
+        }
 
         $this->add_redirect_response($settings, $contact_id, $opportunity_id, $ajax_handler);
     }
@@ -510,6 +539,7 @@ class GHL_Elementor_Form_Action extends \ElementorPro\Modules\Forms\Classes\Acti
             'default_pipeline_stage_id' => trim($settings['default_pipeline_stage_id'] ?? ''),
             'message_custom_field_id' => trim($settings['message_custom_field_id'] ?? ''),
             'redirect_url' => $this->get_redirect_url($form_settings, $settings),
+            'progressive_form_url' => $this->get_progressive_form_url($form_settings),
             'state_user_map' => is_array($settings['state_user_map'] ?? null) ? $settings['state_user_map'] : [],
             'user_stage_map' => is_array($settings['user_stage_map'] ?? null) ? $settings['user_stage_map'] : [],
             'user_calendar_map' => is_array($settings['user_calendar_map'] ?? null) ? $settings['user_calendar_map'] : [],
@@ -533,6 +563,19 @@ class GHL_Elementor_Form_Action extends \ElementorPro\Modules\Forms\Classes\Acti
         }
 
         return esc_url_raw($dashboard_settings['redirect_url'] ?? '');
+    }
+
+    /**
+     * Get the appointment form's return destination.
+     *
+     * @param array $form_settings Elementor form settings.
+     * @return string
+     */
+    private function get_progressive_form_url(array $form_settings)
+    {
+        $url_setting = $form_settings['ghl_progressive_form_url'] ?? [];
+
+        return is_array($url_setting) ? esc_url_raw($url_setting['url'] ?? '') : '';
     }
 
     /**

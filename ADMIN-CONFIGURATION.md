@@ -63,3 +63,11 @@ This section is read-only. Calendar name, ID, and type are displayed.
 - **Last GHL refresh:** Shows the last fully successful refresh time.
 
 Refresh after changing users, pipelines, stages, or calendars in GHL, then review and save the mappings again.
+
+## Appointment return button
+
+In the Elementor **Lead Schedule Appointment Form**, keep the hidden fields named `contact_id` and `opportunity_id`. Under the **GHL Contact + Opportunity** action, set **Progressive Form URL After Appointment** to the progressive form page URL. Do not add Elementor's separate Redirect action to this form. After GHL successfully creates the appointment, the form displays **Continue to your product details**. The link carries both IDs, and the progressive form uses the contact ID to load the saved event item/product interest and the opportunity ID for its later update.
+
+When this URL is set, the appointment form stays on its success screen so the visitor can use the button. Other forms continue to use their configured redirect. If the URL is left empty, the appointment form retains its previous redirect behavior.
+
+For a page using the embedded calendar shortcode, set `[ghl_booking_calendar progressive_form_url="https://example.com/progressive-form/"]` with your actual progressive form URL. The link appears beneath the calendar when both IDs are in the scheduling page URL. Because the GHL calendar runs in a separate iframe, the link is available for the visitor to use after booking; the shortcode cannot verify booking completion.

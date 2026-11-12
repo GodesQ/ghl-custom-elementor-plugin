@@ -11,7 +11,7 @@ if (!defined('ABSPATH')) {
 
 class GHL_Elementor_Plugin
 {
-    const VERSION = '2.0.2';
+    const VERSION = '2.0.3';
 
     /**
      * @var GHL_Elementor_Settings
@@ -78,7 +78,7 @@ class GHL_Elementor_Plugin
         wp_enqueue_script(
             'ghl-elementor-progressive-form-prefill',
             GHL_ELEMENTOR_PLUGIN_URL . 'assets/js/progressive-form-prefill.js',
-            [],
+            ['jquery'],
             self::VERSION,
             true
         );

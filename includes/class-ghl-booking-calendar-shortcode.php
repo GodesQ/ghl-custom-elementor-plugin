@@ -53,6 +53,7 @@ class GHL_Booking_Calendar_Shortcode
                 'height' => 700,
                 'contact_param' => 'contact_id',
                 'opportunity_param' => 'opportunity_id',
+                'progressive_form_url' => '',
             ],
             $atts,
             self::SHORTCODE
@@ -81,12 +82,30 @@ class GHL_Booking_Calendar_Shortcode
         $iframe_url = $this->build_iframe_url($calendar_id, $contact_id, $opportunity_id);
         $iframe_id = 'ghl-booking-calendar-' . wp_unique_id();
 
+        $return_button = '';
+        $progressive_form_url = esc_url_raw($atts['progressive_form_url']);
+        if ($progressive_form_url !== '' && $contact_id !== '' && $opportunity_id !== '') {
+            $return_url = add_query_arg(
+                [
+                    'contact_id' => $contact_id,
+                    'opportunity_id' => $opportunity_id,
+                ],
+                $progressive_form_url
+            );
+            $return_button = sprintf(
+                '<div class="ghl-progressive-return" style="margin-top: 1.5rem;"><a class="elementor-button elementor-size-sm" href="%1$s">%2$s</a></div>',
+                esc_url($return_url),
+                esc_html__('Continue to your product details after booking', 'ghl-elementor')
+            );
+        }
+
         return sprintf(
-            '<iframe src="%1$s" height="%2$d" style="width: 100%%; border: none; overflow: hidden; min-height: %2$dpx;" scrolling="no" id="%3$s" title="%4$s"></iframe>',
+            '<iframe src="%1$s" height="%2$d" style="width: 100%%; border: none; overflow: hidden; min-height: %2$dpx;" scrolling="no" id="%3$s" title="%4$s"></iframe>%5$s',
             esc_url($iframe_url),
             $height,
             esc_attr($iframe_id),
-            esc_attr__('Schedule Appointment', 'ghl-elementor')
+            esc_attr__('Schedule Appointment', 'ghl-elementor'),
+            $return_button
         );
     }
 
