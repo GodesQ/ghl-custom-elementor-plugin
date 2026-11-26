@@ -184,12 +184,27 @@ class GHL_Field_Mapper
             $full_name = ($fields['email'] ?? '') ?: ($fields['phone'] ?? '');
         }
 
+        $company_name = trim($fields['company'] ?? '');
+        $event_location = implode(', ', array_filter([
+            trim($fields['event_city'] ?? ''),
+            trim($fields['event_state'] ?? ''),
+        ], static function ($value) {
+            return $value !== '';
+        }));
+        $opportunity_name = implode(' / ', array_filter([
+            trim($fields['event_date'] ?? ''),
+            $company_name !== '' ? $company_name : $full_name,
+            $event_location,
+        ], static function ($value) {
+            return $value !== '';
+        }));
+
         $payload = [
             'locationId' => $settings['location_id'],
             'pipelineId' => $settings['pipeline_id'],
             'pipelineStageId' => $settings['pipeline_stage_id'],
             'contactId' => $contact_id,
-            'name' => 'Website Lead - ' . $full_name,
+            'name' => $opportunity_name,
             'status' => 'open',
             'monetaryValue' => 0,
             'source' => $fields['source'] ?? self::INITIAL_SOURCE,
